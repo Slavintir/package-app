@@ -8,7 +8,7 @@ import { DirectoryHelper } from './helpers/directory';
 import { AppConfig } from './interfaces/app/config';
 import { AppAction } from './interfaces/app/action';
 
-class App {
+export class App {
     private broker: ServiceBroker;
 
     private async createActions(actionsDir: string, extensions: string[] = []): Promise<object> {
@@ -41,11 +41,3 @@ class App {
         await this.broker.start();
     }
 }
-
-async function main(): Promise<void> {
-    const main: App = new App();
-
-    await main.start();
-}
-
-main();

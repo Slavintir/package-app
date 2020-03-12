@@ -7,10 +7,13 @@
         "removeComments": true,
         "preserveConstEnums": true,
         "experimentalDecorators": true,
+        "declaration": true,
         "outDir": "./dist"
     },
     "include": [
-        "src/**/*"
+        "src/**/*",
+        "index.js",
+        "index.d.ts"
     ],
     "exclude": [
         "node_modules",

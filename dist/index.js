@@ -29,9 +29,5 @@ class App {
         await this.broker.start();
     }
 }
-async function main() {
-    const main = new App();
-    await main.start();
-}
-main();
+exports.App = App;
 //# sourceMappingURL=index.js.map
