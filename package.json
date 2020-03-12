@@ -2,7 +2,8 @@
   "name": "package-app",
   "version": "0.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "types": "index.d.ts",
   "scripts": {
     "build": "./node_modules/.bin/rimraf dist/ && ./node_modules/.bin/tsc",
     "start": "node dist/index.js",
