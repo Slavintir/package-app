@@ -6,7 +6,7 @@ export * from './src/interfaces/app';
 
 declare module 'package-app' {
     export class App {
-        start(): Promise<void>;
+        run(): Promise<void>;
 
         static getInstance(options?: AppOptions): App;
     }
