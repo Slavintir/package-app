@@ -19,11 +19,4 @@ class App {
     }
 }
 exports.App = App;
-const app = App.getInstance({
-    actionsDir: 'actions'
-});
-async function main() {
-    await app.run();
-}
-main();
 //# sourceMappingURL=index.js.map
