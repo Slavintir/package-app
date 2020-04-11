@@ -6,11 +6,7 @@ export interface AppAction {
 
 export type AppConfig = {
     transporter: string;
-    serviceName: ServiceName;
-}
-
-export enum ServiceName {
-    Example = 'Example'
+    serviceName: string;
 }
 
 export interface AppOptions {

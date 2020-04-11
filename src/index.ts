@@ -4,13 +4,13 @@ import { resolve } from 'path';
 
 import { MoleculerTransport } from './transports/moleculer';
 
-import { ServiceName, AppOptions } from './interfaces/app';
+import { AppOptions } from './interfaces/app';
 
 const cfg: any = require(resolve('dist', 'env', 'local.js'));
 
 export class App {
     private static instance: App;
-    private static serviceName: ServiceName;
+    private static serviceName: string;
     private static moleculerTransport: MoleculerTransport;
 
     constructor(options?: AppOptions) {
