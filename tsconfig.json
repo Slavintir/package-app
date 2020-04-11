@@ -1,21 +1,52 @@
 {
+    "compileOnSave": true,
     "compilerOptions": {
-        "module": "CommonJS",
-        "target": "ESNext",
-        "sourceMap": true,
-        "noImplicitAny": true,
-        "removeComments": true,
-        "preserveConstEnums": true,
         "experimentalDecorators": true,
-        "declaration": true,
-        "outDir": "./dist"
+        "outDir": "dist",
+        "module": "commonjs",
+        "target": "es2017",
+        "sourceMap": true,
+        "moduleResolution": "node",
+        "baseUrl": "./",
+        "esModuleInterop": true,
+        "noImplicitReturns": true,
+        "paths": {
+            "@interfaces/*": [
+                "src/interfaces/*"
+            ],
+            "@services/*": [
+                "src/services/*"
+            ],
+            "@helpers/*": [
+                "src/helpers/*"
+            ],
+            "@models/*": [
+                "src/models/*"
+            ],
+            "@constants": [
+                "src/constants.ts"
+            ],
+            "@schemas/*": [
+                "src/schemas/*"
+            ],
+            "@errors/*": [
+                "src/errors/*"
+            ],
+            "@decorators/*": [
+                "src/decorators/*"
+            ],
+            "@transports/*": [
+                "src/transports/*"
+            ],
+            "@config/*": [
+                "src/env/*"
+            ]
+        }
     },
     "include": [
-        "src/**/*",
-        "index.js",
-        "index.d.ts"
+        "src/**/*"
     ],
     "exclude": [
-        "node_modules",
+        "node_modules"
     ]
 }

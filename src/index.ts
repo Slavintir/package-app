@@ -1,43 +1,38 @@
-import { ServiceBroker, BrokerOptions } from 'moleculer';
-import { resolve, extname } from 'path'
+import 'module-alias/register';
 
-import localConfig from './env/local';
+import { resolve } from 'path';
 
-import { DirectoryHelper } from './helpers/directory';
+import { MoleculerTransport } from '@transports/moleculer';
 
-import { AppConfig } from './interfaces/app/config';
-import { AppAction } from './interfaces/app/action';
+import { ServiceName, AppOptions } from '@interfaces/app';
+
+const cfg: any = require(resolve('env', 'local.js'));
 
 export class App {
-    private broker: ServiceBroker;
+    private static instance: App;
+    private static serviceName: ServiceName;
+    private static moleculerTransport: MoleculerTransport;
 
-    private async createActions(actionsDir: string, extensions: string[] = []): Promise<object> {
-        const actions: any = {};
-        for await (const actionDir of DirectoryHelper.getFiles(actionsDir)) {
-            if (!extensions.includes(extname(actionDir))) {
-                const action: AppAction = require(actionDir).default;
-                actions[`${action.getName()}`] = action.handler;
-            }
-        }
-
-        return actions;
+    constructor(options?: AppOptions) {
+        App.serviceName = cfg.serviceName;
+        App.moleculerTransport = new MoleculerTransport(options?.actionsDir);
     }
 
-    private createService(name: string, actions: any, options: BrokerOptions): ServiceBroker {
-        const broker: ServiceBroker = new ServiceBroker(options);
-        broker.createService({ name, actions });
-
-        return broker;
+    static getInstance(options?: AppOptions): App {
+        return App.instance ? App.instance : new App(options);
     }
 
-    async start(): Promise<void> {
-        const { actionsDir, serviceName, transporter }: AppConfig = localConfig;
-        const actions: object = await this.createActions(resolve('dist', actionsDir), ['.map']);
-
-        this.broker = this.createService(serviceName, actions, {
-            transporter
-        });
-
-        await this.broker.start();
+    async run(): Promise<void> {
+        await App.moleculerTransport?.start({ ...cfg, serviceName: App.serviceName });
     }
 }
+
+const app: App = App.getInstance({
+    actionsDir: 'actions'
+});
+
+async function main(): Promise<void> {
+    await app.run();
+}
+
+main();

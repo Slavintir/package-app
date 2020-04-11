@@ -1,33 +1,29 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const moleculer_1 = require("moleculer");
+require("module-alias/register");
 const path_1 = require("path");
-const local_1 = require("./env/local");
-const directory_1 = require("./helpers/directory");
+const moleculer_1 = require("@transports/moleculer");
+const cfg = require(path_1.resolve('env', 'local.js'));
 class App {
-    async createActions(actionsDir, extensions = []) {
-        const actions = {};
-        for await (const actionDir of directory_1.DirectoryHelper.getFiles(actionsDir)) {
-            if (!extensions.includes(path_1.extname(actionDir))) {
-                const action = require(actionDir).default;
-                actions[`${action.getName()}`] = action.handler;
-            }
-        }
-        return actions;
+    constructor(options) {
+        var _a;
+        App.serviceName = cfg.serviceName;
+        App.moleculerTransport = new moleculer_1.MoleculerTransport((_a = options) === null || _a === void 0 ? void 0 : _a.actionsDir);
     }
-    createService(name, actions, options) {
-        const broker = new moleculer_1.ServiceBroker(options);
-        broker.createService({ name, actions });
-        return broker;
+    static getInstance(options) {
+        return App.instance ? App.instance : new App(options);
     }
-    async start() {
-        const { actionsDir, serviceName, transporter } = local_1.default;
-        const actions = await this.createActions(path_1.resolve('dist', actionsDir), ['.map']);
-        this.broker = this.createService(serviceName, actions, {
-            transporter
-        });
-        await this.broker.start();
+    async run() {
+        var _a;
+        await ((_a = App.moleculerTransport) === null || _a === void 0 ? void 0 : _a.start(Object.assign(Object.assign({}, cfg), { serviceName: App.serviceName })));
     }
 }
 exports.App = App;
+const app = App.getInstance({
+    actionsDir: 'actions'
+});
+async function main() {
+    await app.run();
+}
+main();
 //# sourceMappingURL=index.js.map

@@ -1,4 +1,6 @@
-export * from './src/interfaces';
+export * from './src/decorators/actions';
+export * from './src/errors/action'
+export * from './src/interfaces/app';
 
 declare module 'package-app' {
     export class App {

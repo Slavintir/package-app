@@ -19,14 +19,26 @@
     "url": "https://github.com/Slavintir/package-app/issues"
   },
   "homepage": "https://github.com/Slavintir/package-app#readme",
+  "dependencies": {
+    "rimraf": "^3.0.2",
+    "ioredis": "^4.14.1",
+    "typescript": "^3.7.5",
+    "moleculer": "^0.13.12",
+    "module-alias": "^2.2.2"
+  },
   "devDependencies": {
     "@types/node": "^13.7.1",
-    "rimraf": "^3.0.2",
-    "tslint-config-airbnb": "^5.11.2",
-    "typescript": "^3.7.5"
+    "tslint-config-airbnb": "^5.11.2"
   },
-  "dependencies": {
-    "ioredis": "^4.14.1",
-    "moleculer": "^0.13.12"
+  "_moduleAliases": {
+    "@constants": "dist/constants.js",
+    "@interfaces": "dist/interfaces",
+    "@decorators": "dist/decorators",
+    "@transports": "dist/transports",
+    "@services": "dist/services",
+    "@helpers": "dist/helpers",
+    "@errors": "dist/errors",
+    "@models": "dist/models",
+    "@config": "dist/env"
   }
 }
