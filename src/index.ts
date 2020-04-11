@@ -6,7 +6,7 @@ import { MoleculerTransport } from './transports/moleculer';
 
 import { ServiceName, AppOptions } from './interfaces/app';
 
-const cfg: any = require(resolve('env', 'local.js'));
+const cfg: any = require(resolve('dist', 'env', 'local.js'));
 
 export class App {
     private static instance: App;
