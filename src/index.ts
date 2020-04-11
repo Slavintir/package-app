@@ -26,13 +26,3 @@ export class App {
         await App.moleculerTransport?.start({ ...cfg, serviceName: App.serviceName });
     }
 }
-
-const app: App = App.getInstance({
-    actionsDir: 'actions'
-});
-
-async function main(): Promise<void> {
-    await app.run();
-}
-
-main();
