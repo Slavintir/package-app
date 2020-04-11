@@ -1,11 +1,11 @@
 import { ServiceBroker, BrokerOptions } from 'moleculer';
 import { resolve, extname, } from 'path'
 
-import { RegisterActionError } from '@errors/action';
+import { RegisterActionError } from '../errors/action';
 
-import { DirectoryHelper } from '@helpers/directory';
+import { DirectoryHelper } from '../helpers/directory';
 
-import { AppConfig } from '@interfaces/app/index';
+import { AppConfig } from '../interfaces/app/index';
 import { existsSync, mkdirSync } from 'fs';
 
 export class MoleculerTransport {

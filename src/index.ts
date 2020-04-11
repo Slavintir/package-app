@@ -2,9 +2,9 @@ import 'module-alias/register';
 
 import { resolve } from 'path';
 
-import { MoleculerTransport } from '@transports/moleculer';
+import { MoleculerTransport } from './transports/moleculer';
 
-import { ServiceName, AppOptions } from '@interfaces/app';
+import { ServiceName, AppOptions } from './interfaces/app';
 
 const cfg: any = require(resolve('env', 'local.js'));
 

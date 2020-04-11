@@ -9,8 +9,8 @@ var __asyncValues = (this && this.__asyncValues) || function (o) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const moleculer_1 = require("moleculer");
 const path_1 = require("path");
-const action_1 = require("@errors/action");
-const directory_1 = require("@helpers/directory");
+const action_1 = require("../errors/action");
+const directory_1 = require("../helpers/directory");
 const fs_1 = require("fs");
 class MoleculerTransport {
     constructor(actionsDir = 'actions') {
