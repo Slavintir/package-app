@@ -4,9 +4,9 @@ import { resolve } from 'path';
 
 import { MoleculerTransport } from './transports/moleculer';
 
-import { AppOptions } from './interfaces/app';
+import { AppOptions, AppConfig } from './interfaces/app';
 
-const cfg: any = require(resolve('dist', 'env', 'local.js'));
+const cfg: AppConfig = require(resolve('dist', 'env', 'local.js')).default;
 
 export class App {
     private static instance: App;

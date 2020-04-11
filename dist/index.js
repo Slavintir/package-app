@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 require("module-alias/register");
 const path_1 = require("path");
 const moleculer_1 = require("./transports/moleculer");
-const cfg = require(path_1.resolve('dist', 'env', 'local.js'));
+const cfg = require(path_1.resolve('dist', 'env', 'local.js')).default;
 class App {
     constructor(options) {
         var _a;
