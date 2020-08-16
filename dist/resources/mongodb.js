@@ -11,7 +11,7 @@ class MongodbResource {
     async connect() {
         const interval = setInterval(async () => {
             if (await this.init()) {
-                console.info('Connected to mongodb. ', { uris: this });
+                console.info('Connected to mongodb. ', { uris: this.config.uris });
                 clearInterval(interval);
                 return;
             }
