@@ -1,27 +1,27 @@
 import { connect } from 'mongoose';
 import { MongoDbConfig } from '../interfaces/app';
 
-const DEFAULT_RECONNECT_TIMEOUT: number = 5000;
+const DEFAULT_RECONNECT_INTERVAL: number = 5000;
 
 export class MongodbResource {
     constructor(
         private config: MongoDbConfig,
-        private timeout: number = DEFAULT_RECONNECT_TIMEOUT
+        private interval: number = DEFAULT_RECONNECT_INTERVAL
     ) {}
 
     async connect(): Promise<void> {
         const interval = setInterval(
             async () => {
                 if (await this.init()) {
-                    console.info('Connected to mongodb');
+                    console.info('Connected to mongodb. ', { uris: this });
                     clearInterval(interval);
 
                     return;
                 }
 
-                console.info(`Next try connect to mongodb through ${this.timeout}ms`);
+                console.info(`Next try connect to mongodb through ${this.interval}ms`);
             },
-            this.timeout
+            this.interval
         );
     }
 

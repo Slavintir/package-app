@@ -2,21 +2,21 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.MongodbResource = void 0;
 const mongoose_1 = require("mongoose");
-const DEFAULT_RECONNECT_TIMEOUT = 5000;
+const DEFAULT_RECONNECT_INTERVAL = 5000;
 class MongodbResource {
-    constructor(config, timeout = DEFAULT_RECONNECT_TIMEOUT) {
+    constructor(config, interval = DEFAULT_RECONNECT_INTERVAL) {
         this.config = config;
-        this.timeout = timeout;
+        this.interval = interval;
     }
     async connect() {
         const interval = setInterval(async () => {
             if (await this.init()) {
-                console.info('Connected to mongodb');
+                console.info('Connected to mongodb. ', { uris: this });
                 clearInterval(interval);
                 return;
             }
-            console.info(`Next try connect to mongodb through ${this.timeout}ms`);
-        }, this.timeout);
+            console.info(`Next try connect to mongodb through ${this.interval}ms`);
+        }, this.interval);
     }
     async init() {
         try {
