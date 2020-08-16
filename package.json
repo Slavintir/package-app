@@ -29,18 +29,6 @@
   },
   "devDependencies": {
     "@types/mongoose": "^5.7.36",
-    "@types/node": "^14.0.27",
-    "tslint-config-airbnb": "^5.11.2"
-  },
-  "_moduleAliases": {
-    "@constants": "dist/constants.js",
-    "@interfaces": "dist/interfaces",
-    "@decorators": "dist/decorators",
-    "@transports": "dist/transports",
-    "@services": "dist/services",
-    "@helpers": "dist/helpers",
-    "@errors": "dist/errors",
-    "@models": "dist/models",
-    "@config": "dist/env"
+    "@types/node": "^14.0.27"
   }
 }

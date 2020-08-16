@@ -1,5 +1,5 @@
 import { connect, ConnectionOptions } from 'mongoose';
-import { MongoDbConfig } from '@interfaces/app';
+import { MongoDbConfig } from '../interfaces/app';
 
 const DEFAULT_RECONNECT_TIMEOUT: number = 5000;
 

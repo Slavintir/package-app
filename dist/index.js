@@ -1,7 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.App = void 0;
-require("module-alias/register");
 const path_1 = require("path");
 const moleculer_1 = require("./transports/moleculer");
 const mongodb_1 = require("./resources/mongodb");

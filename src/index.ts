@@ -1,5 +1,3 @@
-import 'module-alias/register';
-
 import { resolve } from 'path';
 
 import { MoleculerTransport } from './transports/moleculer';

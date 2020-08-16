@@ -10,39 +10,7 @@
         "baseUrl": "./",
         "esModuleInterop": true,
         "noImplicitReturns": true,
-        "strict": true,
-        "paths": {
-            "@interfaces/*": [
-                "src/interfaces/*"
-            ],
-            "@services/*": [
-                "src/services/*"
-            ],
-            "@helpers/*": [
-                "src/helpers/*"
-            ],
-            "@models/*": [
-                "src/models/*"
-            ],
-            "@constants": [
-                "src/constants.ts"
-            ],
-            "@schemas/*": [
-                "src/schemas/*"
-            ],
-            "@errors/*": [
-                "src/errors/*"
-            ],
-            "@decorators/*": [
-                "src/decorators/*"
-            ],
-            "@transports/*": [
-                "src/transports/*"
-            ],
-            "@config/*": [
-                "src/env/*"
-            ]
-        }
+        "strict": true
     },
     "include": [
         "src/**/*"
