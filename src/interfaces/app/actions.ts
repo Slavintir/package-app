@@ -1,6 +1,8 @@
-export type ActionHandler<R = object> = () => Promise<R>;
+import { ActionHandler as MoleculerActionHandler } from 'moleculer';
 
-export type Actions = { [name in ActionName]: ActionHandler };
+export type ActionHandler<R = object> = (params: unknown) => Promise<R>;
+
+export type Actions = { [name in ActionName]: MoleculerActionHandler };
 
 /**
  * R - Action response

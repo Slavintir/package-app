@@ -1,4 +1,4 @@
-import { ServiceBroker, BrokerOptions } from 'moleculer';
+import { ServiceBroker, BrokerOptions, Context } from 'moleculer';
 import { promises as fs, Stats } from 'fs';
 import { resolve, extname, } from 'path'
 
@@ -23,7 +23,7 @@ export class MoleculerTransport {
         for await (const actionDir of DirectoryHelper.getFiles(actionsDir)) {
             if (expansions.includes(extname(actionDir))) {
                 const { actionName, handler }: Action = require(actionDir).default;
-                actions[actionName] = handler;
+                actions[actionName] = async (ctx: Context<any, any>) => { await handler(ctx.params) };
             }
         }
 
