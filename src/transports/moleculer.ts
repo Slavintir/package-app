@@ -23,7 +23,7 @@ export class MoleculerTransport {
         for await (const actionDir of DirectoryHelper.getFiles(actionsDir)) {
             if (expansions.includes(extname(actionDir))) {
                 const { actionName, handler }: Action = require(actionDir).default;
-                actions[actionName] = async (ctx: Context<any, any>) => { await handler(ctx.params) };
+                actions[actionName] = async (ctx: Context<any, any>) => handler(ctx.params);
             }
         }
 
