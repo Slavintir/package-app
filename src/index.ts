@@ -4,18 +4,26 @@ import { resolve } from 'path';
 
 import { MoleculerTransport } from './transports/moleculer';
 
-import { AppOptions, AppConfig } from './interfaces/app';
+import { MongodbResource } from './resources/mongodb';
 
-const cfg: AppConfig = require(resolve('dist', 'env', 'local.js')).default;
+import { AppOptions, AppConfig } from './interfaces/app';
 
 export class App {
     private static instance: App;
-    private static serviceName: string;
-    private static moleculerTransport: MoleculerTransport;
+    private config: AppConfig = require(resolve('dist', 'env', 'local.js')).default;
+    private moleculerTransport?: MoleculerTransport;
+    private mongoResource?: MongodbResource;
 
     constructor(options?: AppOptions) {
-        App.serviceName = cfg.serviceName;
-        App.moleculerTransport = new MoleculerTransport(options?.actionsDir);
+        const { serviceName, transporter } = this.config;
+
+        if (options?.actionsDir && transporter) {
+            this.moleculerTransport = new MoleculerTransport(transporter, serviceName, options.actionsDir);
+        }
+
+        if (this.config.mongodb) {
+            this.mongoResource = new MongodbResource(this.config.mongodb);
+        }
     }
 
     static getInstance(options?: AppOptions): App {
@@ -23,6 +31,7 @@ export class App {
     }
 
     async run(): Promise<void> {
-        await App.moleculerTransport?.start({ ...cfg, serviceName: App.serviceName });
+        await this.moleculerTransport?.listen();
+        await this.mongoResource?.connect();
     }
 }

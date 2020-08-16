@@ -7,29 +7,27 @@ var __asyncValues = (this && this.__asyncValues) || function (o) {
     function settle(resolve, reject, d, v) { Promise.resolve(v).then(function(v) { resolve({ value: v, done: d }); }, reject); }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.MoleculerTransport = void 0;
 const moleculer_1 = require("moleculer");
-const path_1 = require("path");
-const action_1 = require("../errors/action");
-const directory_1 = require("../helpers/directory");
 const fs_1 = require("fs");
+const path_1 = require("path");
+const directory_1 = require("../helpers/directory");
+const DEFAULT_ACTION_DIR = 'actions';
 class MoleculerTransport {
-    constructor(actionsDir = 'actions') {
-        MoleculerTransport.actionsDir = actionsDir;
+    constructor(transporter, serviceName, actionsDir = DEFAULT_ACTION_DIR) {
+        this.transporter = transporter;
+        this.serviceName = serviceName;
+        this.actionsDir = actionsDir;
     }
-    static registerAction(actionName, handler, path) {
-        if (!(typeof actionName === 'string' && typeof handler === 'function')) {
-            throw new action_1.RegisterActionError(path);
-        }
-        MoleculerTransport.actions[actionName] = handler;
-        console.log('Success registered action: %s', actionName);
-    }
-    async registerActions(actionsDir, expansions = ['.js']) {
+    async initActions(actionsDir, expansions = ['.js']) {
         var e_1, _a;
+        const actions = {};
         try {
             for (var _b = __asyncValues(directory_1.DirectoryHelper.getFiles(actionsDir)), _c; _c = await _b.next(), !_c.done;) {
                 const actionDir = _c.value;
                 if (expansions.includes(path_1.extname(actionDir))) {
-                    require(actionDir);
+                    const { actionName, handler } = require(actionDir).default;
+                    actions[actionName] = handler;
                 }
             }
         }
@@ -40,26 +38,26 @@ class MoleculerTransport {
             }
             finally { if (e_1) throw e_1.error; }
         }
-        return MoleculerTransport.actions;
+        return actions;
     }
     createService(name, actions, options) {
         const broker = new moleculer_1.ServiceBroker(options);
         broker.createService({ name, actions });
         return broker;
     }
-    async start(cfg) {
-        const { transporter, serviceName } = cfg;
-        const actionDir = path_1.resolve('dist', MoleculerTransport.actionsDir);
-        if (!fs_1.existsSync(actionDir)) {
-            fs_1.mkdirSync(actionDir);
+    async listen() {
+        const actionDir = path_1.resolve('dist', this.actionsDir);
+        const stats = await fs_1.promises.stat(actionDir);
+        if (!stats.isDirectory()) {
+            await fs_1.promises.mkdir(actionDir);
         }
-        const actions = await this.registerActions(actionDir);
-        this.broker = this.createService(serviceName, actions, {
-            transporter
+        const actions = await this.initActions(actionDir);
+        this.broker = this.createService(this.serviceName, actions, {
+            transporter: this.transporter
         });
         await this.broker.start();
+        console.info('Listening actions: ', Object.keys(actions));
     }
 }
 exports.MoleculerTransport = MoleculerTransport;
-MoleculerTransport.actions = {};
 //# sourceMappingURL=moleculer.js.map

@@ -1,39 +1,33 @@
 import { ServiceBroker, BrokerOptions } from 'moleculer';
+import { promises as fs, Stats } from 'fs';
 import { resolve, extname, } from 'path'
-
-import { RegisterActionError } from '../errors/action';
 
 import { DirectoryHelper } from '../helpers/directory';
 
-import { AppConfig } from '../interfaces/app/index';
-import { existsSync, mkdirSync } from 'fs';
+import { Action, Actions } from '../interfaces/app/actions'
+
+const DEFAULT_ACTION_DIR: string = 'actions';
 
 export class MoleculerTransport {
-    private broker: ServiceBroker;
-    private static actions: object = {};
-    private static actionsDir: string;
+    private broker!: ServiceBroker;
 
-    constructor(actionsDir: string = 'actions') {
-        MoleculerTransport.actionsDir = actionsDir;
-    }
+    constructor(
+        private transporter: string,
+        private serviceName: string,
+        private actionsDir: string = DEFAULT_ACTION_DIR
+    ) { }
 
-    static registerAction(actionName: string, handler: Function, path: string): void {
-        if (!(typeof actionName === 'string' && typeof handler === 'function')) {
-            throw new RegisterActionError(path);
-        }
+    private async initActions(actionsDir: string, expansions: string[] = ['.js']): Promise<Actions> {
+        const actions: Actions = {};
 
-        MoleculerTransport.actions[actionName] = handler;
-        console.log('Success registered action: %s', actionName);
-    }
-
-    private async registerActions(actionsDir: string, expansions: string[] = ['.js']): Promise<object> {
         for await (const actionDir of DirectoryHelper.getFiles(actionsDir)) {
             if (expansions.includes(extname(actionDir))) {
-                require(actionDir);
+                const { actionName, handler }: Action = require(actionDir).default;
+                actions[actionName] = handler;
             }
         }
 
-        return MoleculerTransport.actions;
+        return actions;
     }
 
     private createService(name: string, actions: any, options: BrokerOptions): ServiceBroker {
@@ -43,20 +37,21 @@ export class MoleculerTransport {
         return broker;
     }
 
-    async start(cfg: AppConfig): Promise<void> {
-        const { transporter, serviceName }: AppConfig = cfg;
-        const actionDir: string = resolve('dist', MoleculerTransport.actionsDir);
+    async listen(): Promise<void> {
+        const actionDir: string = resolve('dist', this.actionsDir);
+        const stats: Stats = await fs.stat(actionDir);
 
-        if (!existsSync(actionDir)) {
-            mkdirSync(actionDir);
+        if (!stats.isDirectory()) {
+            await fs.mkdir(actionDir);
         }
 
-        const actions: object = await this.registerActions(actionDir);
+        const actions: Actions = await this.initActions(actionDir);
 
-        this.broker = this.createService(serviceName, actions, {
-            transporter
+        this.broker = this.createService(this.serviceName, actions, {
+            transporter: this.transporter
         });
 
         await this.broker.start();
+        console.info('Listening actions: ',  Object.keys(actions));
     }
 }

@@ -24,13 +24,13 @@ var __asyncGenerator = (this && this.__asyncGenerator) || function (thisArg, _ar
     function settle(f, v) { if (f(v), q.shift(), q.length) resume(q[0][0], q[0][1]); }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.DirectoryHelper = void 0;
 const path_1 = require("path");
 const fs_1 = require("fs");
-var readdir = fs_1.promises.readdir;
 class DirectoryHelper {
     static getFiles(dir) {
         return __asyncGenerator(this, arguments, function* getFiles_1() {
-            const dirents = yield __await(readdir(dir, { withFileTypes: true }));
+            const dirents = yield __await(fs_1.promises.readdir(dir, { withFileTypes: true }));
             for (const dirent of dirents) {
                 const res = path_1.resolve(dir, dirent.name);
                 if (dirent.isDirectory()) {

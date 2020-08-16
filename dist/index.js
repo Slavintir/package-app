@@ -1,21 +1,28 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.App = void 0;
 require("module-alias/register");
 const path_1 = require("path");
 const moleculer_1 = require("./transports/moleculer");
-const cfg = require(path_1.resolve('dist', 'env', 'local.js')).default;
+const mongodb_1 = require("./resources/mongodb");
 class App {
     constructor(options) {
-        var _a;
-        App.serviceName = cfg.serviceName;
-        App.moleculerTransport = new moleculer_1.MoleculerTransport((_a = options) === null || _a === void 0 ? void 0 : _a.actionsDir);
+        this.config = require(path_1.resolve('dist', 'env', 'local.js')).default;
+        const { serviceName, transporter } = this.config;
+        if ((options === null || options === void 0 ? void 0 : options.actionsDir) && transporter) {
+            this.moleculerTransport = new moleculer_1.MoleculerTransport(transporter, serviceName, options.actionsDir);
+        }
+        if (this.config.mongodb) {
+            this.mongoResource = new mongodb_1.MongodbResource(this.config.mongodb);
+        }
     }
     static getInstance(options) {
         return App.instance ? App.instance : new App(options);
     }
     async run() {
-        var _a;
-        await ((_a = App.moleculerTransport) === null || _a === void 0 ? void 0 : _a.start(Object.assign(Object.assign({}, cfg), { serviceName: App.serviceName })));
+        var _a, _b;
+        await ((_a = this.moleculerTransport) === null || _a === void 0 ? void 0 : _a.listen());
+        await ((_b = this.mongoResource) === null || _b === void 0 ? void 0 : _b.connect());
     }
 }
 exports.App = App;

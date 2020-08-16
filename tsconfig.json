@@ -10,6 +10,7 @@
         "baseUrl": "./",
         "esModuleInterop": true,
         "noImplicitReturns": true,
+        "strict": true,
         "paths": {
             "@interfaces/*": [
                 "src/interfaces/*"
