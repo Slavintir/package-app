@@ -27,7 +27,7 @@ class MoleculerTransport {
                 const actionDir = _c.value;
                 if (expansions.includes(path_1.extname(actionDir))) {
                     const { actionName, handler } = require(actionDir).default;
-                    actions[actionName] = handler;
+                    actions[actionName] = async (ctx) => { await handler(ctx.params); };
                 }
             }
         }
