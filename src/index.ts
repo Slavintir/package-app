@@ -29,7 +29,11 @@ export class App {
     }
 
     async run(): Promise<void> {
-        await this.moleculerTransport?.listen();
-        await this.mongoResource?.connect();
+        const promises = [
+            this.mongoResource?.connect(),
+            this.moleculerTransport?.listen()
+        ];
+
+        Promise.all(promises);
     }
 }

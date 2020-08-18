@@ -20,8 +20,11 @@ class App {
     }
     async run() {
         var _a, _b;
-        await ((_a = this.moleculerTransport) === null || _a === void 0 ? void 0 : _a.listen());
-        await ((_b = this.mongoResource) === null || _b === void 0 ? void 0 : _b.connect());
+        const promises = [
+            (_a = this.mongoResource) === null || _a === void 0 ? void 0 : _a.connect(),
+            (_b = this.moleculerTransport) === null || _b === void 0 ? void 0 : _b.listen()
+        ];
+        Promise.all(promises);
     }
 }
 exports.App = App;
