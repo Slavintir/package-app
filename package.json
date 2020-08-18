@@ -7,7 +7,8 @@
   "scripts": {
     "build": "./node_modules/.bin/rimraf dist/ && ./node_modules/.bin/tsc",
     "start": "node dist/index.js",
-    "bs": "yarn build && yarn start"
+    "bs": "yarn build && yarn start",
+    "test": "jest"
   },
   "repository": {
     "type": "git",
@@ -21,6 +22,7 @@
   "homepage": "https://github.com/Slavintir/package-app#readme",
   "dependencies": {
     "ioredis": "^4.17.3",
+    "jest": "^26.4.0",
     "module-alias": "^2.2.2",
     "moleculer": "^0.14.9",
     "mongoose": "^5.10.0",
@@ -28,7 +30,9 @@
     "typescript": "^3.9.7"
   },
   "devDependencies": {
+    "@types/jest": "^26.0.10",
     "@types/mongoose": "^5.7.36",
-    "@types/node": "^14.0.27"
+    "@types/node": "^14.0.27",
+    "ts-jest": "^26.2.0"
   }
 }
