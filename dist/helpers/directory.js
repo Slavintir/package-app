@@ -39,10 +39,10 @@ class DirectoryHelper {
     static resolveDirectory(directoryPath, directory) {
         return __asyncGenerator(this, arguments, function* resolveDirectory_1() {
             const path = path_1.resolve(directoryPath, directory.name);
-            if (!directory.isDirectory()) {
+            if (directory.isDirectory()) {
                 return yield __await(yield __await(yield* __asyncDelegator(__asyncValues(DirectoryHelper.recursiveFindFile(path)))));
             }
-            return yield __await(DirectoryHelper.recursiveFindFile(path));
+            return yield __await(path);
         });
     }
 }

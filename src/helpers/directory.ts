@@ -13,10 +13,10 @@ export class DirectoryHelper {
     private static async* resolveDirectory(directoryPath: string, directory: Dirent): AsyncGenerator<string> {
         const path: string = resolve(directoryPath, directory.name);
 
-        if (!directory.isDirectory()) {
+        if (directory.isDirectory()) {
             return yield* DirectoryHelper.recursiveFindFile(path);
         }
 
-        return DirectoryHelper.recursiveFindFile(path);
+        return path;
     }
 }
