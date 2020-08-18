@@ -20,7 +20,7 @@ export class MoleculerTransport {
     private async initActions(actionsDir: string, expansions: string[] = ['.js']): Promise<Actions> {
         const actions: Actions = {};
 
-        for await (const actionDir of DirectoryHelper.getFiles(actionsDir)) {
+        for await (const actionDir of DirectoryHelper.recursiveFindFile(actionsDir)) {
             if (expansions.includes(extname(actionDir))) {
                 const { actionName, handler }: Action = require(actionDir).default;
                 actions[actionName] = async (ctx: Context<any, any>) => handler(ctx.params);

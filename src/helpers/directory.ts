@@ -2,15 +2,21 @@ import { resolve } from 'path';
 import { promises as fs, Dirent } from 'fs';
 
 export class DirectoryHelper {
-    static async* getFiles(dir: string): AsyncGenerator<string> {
-        const dirents: Dirent[] = await fs.readdir(dir, { withFileTypes: true });
-        for (const dirent of dirents) {
-            const res = resolve(dir, dirent.name);
-            if (dirent.isDirectory()) {
-                yield* DirectoryHelper.getFiles(res);
-            } else {
-                yield res;
-            }
+    static async* recursiveFindFile(directoryPath: string): AsyncGenerator<string> {
+        const directories: Dirent[] = await fs.readdir(directoryPath, { withFileTypes: true });
+
+        for (const directory of directories) {
+            yield* DirectoryHelper.resolveDirectory(directoryPath, directory);
         }
+    }
+
+    private static async* resolveDirectory(directoryPath: string, directory: Dirent): AsyncGenerator<string> {
+        const path: string = resolve(directoryPath, directory.name);
+
+        if (!directory.isDirectory()) {
+            return yield* DirectoryHelper.recursiveFindFile(path);
+        }
+
+        return DirectoryHelper.recursiveFindFile(path);
     }
 }

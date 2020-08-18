@@ -28,18 +28,21 @@ exports.DirectoryHelper = void 0;
 const path_1 = require("path");
 const fs_1 = require("fs");
 class DirectoryHelper {
-    static getFiles(dir) {
-        return __asyncGenerator(this, arguments, function* getFiles_1() {
-            const dirents = yield __await(fs_1.promises.readdir(dir, { withFileTypes: true }));
-            for (const dirent of dirents) {
-                const res = path_1.resolve(dir, dirent.name);
-                if (dirent.isDirectory()) {
-                    yield __await(yield* __asyncDelegator(__asyncValues(DirectoryHelper.getFiles(res))));
-                }
-                else {
-                    yield yield __await(res);
-                }
+    static recursiveFindFile(directoryPath) {
+        return __asyncGenerator(this, arguments, function* recursiveFindFile_1() {
+            const directories = yield __await(fs_1.promises.readdir(directoryPath, { withFileTypes: true }));
+            for (const directory of directories) {
+                yield __await(yield* __asyncDelegator(__asyncValues(DirectoryHelper.resolveDirectory(directoryPath, directory))));
             }
+        });
+    }
+    static resolveDirectory(directoryPath, directory) {
+        return __asyncGenerator(this, arguments, function* resolveDirectory_1() {
+            const path = path_1.resolve(directoryPath, directory.name);
+            if (!directory.isDirectory()) {
+                return yield __await(yield __await(yield* __asyncDelegator(__asyncValues(DirectoryHelper.recursiveFindFile(path)))));
+            }
+            return yield __await(DirectoryHelper.recursiveFindFile(path));
         });
     }
 }

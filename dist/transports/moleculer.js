@@ -23,7 +23,7 @@ class MoleculerTransport {
         var e_1, _a;
         const actions = {};
         try {
-            for (var _b = __asyncValues(directory_1.DirectoryHelper.getFiles(actionsDir)), _c; _c = await _b.next(), !_c.done;) {
+            for (var _b = __asyncValues(directory_1.DirectoryHelper.recursiveFindFile(actionsDir)), _c; _c = await _b.next(), !_c.done;) {
                 const actionDir = _c.value;
                 if (expansions.includes(path_1.extname(actionDir))) {
                     const { actionName, handler } = require(actionDir).default;
