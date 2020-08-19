@@ -25,6 +25,7 @@
     "jest": "^26.4.0",
     "module-alias": "^2.2.2",
     "moleculer": "^0.14.9",
+    "moleculer-web": "^0.9.1",
     "mongoose": "^5.10.0",
     "rimraf": "^3.0.2",
     "typescript": "^3.9.7"

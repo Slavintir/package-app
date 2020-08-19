@@ -1,6 +1,7 @@
 import { ServiceBroker, BrokerOptions, Context } from 'moleculer';
 import { promises as fs, Stats } from 'fs';
-import { resolve, extname, } from 'path'
+import { resolve, extname, } from 'path';
+import ApiService from 'moleculer-web';
 
 import { DirectoryHelper } from '../helpers/directory';
 
@@ -33,6 +34,7 @@ export class MoleculerTransport {
     private createService(name: string, actions: any, options: BrokerOptions): ServiceBroker {
         const broker: ServiceBroker = new ServiceBroker(options);
         broker.createService({ name, actions });
+        broker.createService(ApiService);
 
         return broker;
     }
