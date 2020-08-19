@@ -11,18 +11,18 @@ import { UnexpectedError } from './errors';
 export class App {
     private static instance: App;
     private config: AppConfig = require(resolve('dist', 'env', 'local.js')).default;
-    private moleculerTransport?: MoleculerTransport;
-    private mongoResource?: MongodbResource;
+    private static moleculerTransport?: MoleculerTransport;
+    private static mongoResource?: MongodbResource;
 
     constructor(options?: AppOptions) {
         const { serviceName, transporter } = this.config;
 
         if (options?.actionsDir && transporter) {
-            this.moleculerTransport = new MoleculerTransport(transporter, serviceName, options.actionsDir);
+            App.moleculerTransport = new MoleculerTransport(transporter, serviceName, options.actionsDir);
         }
 
         if (this.config.mongodb) {
-            this.mongoResource = new MongodbResource(this.config.mongodb);
+            App.mongoResource = new MongodbResource(this.config.mongodb);
         }
     }
 
@@ -30,7 +30,7 @@ export class App {
         return App.instance ? App.instance : new App(options);
     }
 
-    async act<T, P>(service: ServiceName, action: ActionName, params: P, options?: CallingOptions): Promise<T> {
+    static async act<T, P>(service: ServiceName, action: ActionName, params: P, options?: CallingOptions): Promise<T> {
         if (!this.moleculerTransport) {
             throw new UnexpectedError('Moleculer transport did not initialized', { service, action, params });
         }
@@ -40,8 +40,8 @@ export class App {
 
     async run(): Promise<void> {
         const promises = [
-            this.mongoResource?.connect(),
-            this.moleculerTransport?.listen()
+            App.mongoResource?.connect(),
+            App.moleculerTransport?.listen()
         ];
 
         Promise.all(promises);

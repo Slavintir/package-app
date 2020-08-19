@@ -10,16 +10,16 @@ class App {
         this.config = require(path_1.resolve('dist', 'env', 'local.js')).default;
         const { serviceName, transporter } = this.config;
         if ((options === null || options === void 0 ? void 0 : options.actionsDir) && transporter) {
-            this.moleculerTransport = new moleculer_1.MoleculerTransport(transporter, serviceName, options.actionsDir);
+            App.moleculerTransport = new moleculer_1.MoleculerTransport(transporter, serviceName, options.actionsDir);
         }
         if (this.config.mongodb) {
-            this.mongoResource = new mongodb_1.MongodbResource(this.config.mongodb);
+            App.mongoResource = new mongodb_1.MongodbResource(this.config.mongodb);
         }
     }
     static getInstance(options) {
         return App.instance ? App.instance : new App(options);
     }
-    async act(service, action, params, options) {
+    static async act(service, action, params, options) {
         if (!this.moleculerTransport) {
             throw new errors_1.UnexpectedError('Moleculer transport did not initialized', { service, action, params });
         }
@@ -28,8 +28,8 @@ class App {
     async run() {
         var _a, _b;
         const promises = [
-            (_a = this.mongoResource) === null || _a === void 0 ? void 0 : _a.connect(),
-            (_b = this.moleculerTransport) === null || _b === void 0 ? void 0 : _b.listen()
+            (_a = App.mongoResource) === null || _a === void 0 ? void 0 : _a.connect(),
+            (_b = App.moleculerTransport) === null || _b === void 0 ? void 0 : _b.listen()
         ];
         Promise.all(promises);
     }
