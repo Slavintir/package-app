@@ -1,9 +1,12 @@
-import { ActionHandler } from 'moleculer';
 import { ConnectionOptions } from 'mongoose';
 
 export interface MongoDbConfig {
     uris: string;
     options: ConnectionOptions;
+}
+
+export enum ServiceName {
+    Gateway = 'gateway'
 }
 
 export type AppConfig = {

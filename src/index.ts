@@ -1,10 +1,12 @@
+import { CallingOptions } from 'moleculer';
 import { resolve } from 'path';
 
 import { MoleculerTransport } from './transports/moleculer';
 
 import { MongodbResource } from './resources/mongodb';
 
-import { AppOptions, AppConfig } from './interfaces/app';
+import { AppOptions, AppConfig, ServiceName, ActionName } from './interfaces/app';
+import { UnexpectedError } from './errors';
 
 export class App {
     private static instance: App;
@@ -26,6 +28,14 @@ export class App {
 
     static getInstance(options?: AppOptions): App {
         return App.instance ? App.instance : new App(options);
+    }
+
+    async act<T, P>(service: ServiceName, action: ActionName, params: P, options?: CallingOptions): Promise<T> {
+        if (!this.moleculerTransport) {
+            throw new UnexpectedError('Moleculer transport did not initialized', { service, action, params });
+        }
+
+        return this.moleculerTransport.act(service, action, params, options);
     }
 
     async run(): Promise<void> {

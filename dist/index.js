@@ -4,6 +4,7 @@ exports.App = void 0;
 const path_1 = require("path");
 const moleculer_1 = require("./transports/moleculer");
 const mongodb_1 = require("./resources/mongodb");
+const errors_1 = require("./errors");
 class App {
     constructor(options) {
         this.config = require(path_1.resolve('dist', 'env', 'local.js')).default;
@@ -17,6 +18,12 @@ class App {
     }
     static getInstance(options) {
         return App.instance ? App.instance : new App(options);
+    }
+    async act(service, action, params, options) {
+        if (!this.moleculerTransport) {
+            throw new errors_1.UnexpectedError('Moleculer transport did not initialized', { service, action, params });
+        }
+        return this.moleculerTransport.act(service, action, params, options);
     }
     async run() {
         var _a, _b;
