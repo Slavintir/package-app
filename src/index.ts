@@ -10,11 +10,11 @@ import { UnexpectedError } from './errors';
 
 export class App {
     private static instance: App;
-    private config: AppConfig = require(resolve('dist', 'env', 'local.js')).default;
     private static moleculerTransport?: MoleculerTransport;
     private static mongoResource?: MongodbResource;
+    private config: AppConfig = require(resolve('dist', 'env', 'local.js')).default;
 
-    constructor(options?: AppOptions) {
+    constructor(private options: AppOptions) {
         const { serviceName, transporter } = this.config;
 
         if (options?.actionsDir && transporter) {
@@ -26,7 +26,7 @@ export class App {
         }
     }
 
-    static getInstance(options?: AppOptions): App {
+    static getInstance(options: AppOptions): App {
         return App.instance ? App.instance : new App(options);
     }
 
@@ -41,7 +41,7 @@ export class App {
     async run(): Promise<void> {
         const promises = [
             App.mongoResource?.connect(),
-            App.moleculerTransport?.listen()
+            App.moleculerTransport?.listen(this.options.api?.express, this.options.api?.settings)
         ];
 
         Promise.all(promises);

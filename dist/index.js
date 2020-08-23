@@ -7,6 +7,7 @@ const mongodb_1 = require("./resources/mongodb");
 const errors_1 = require("./errors");
 class App {
     constructor(options) {
+        this.options = options;
         this.config = require(path_1.resolve('dist', 'env', 'local.js')).default;
         const { serviceName, transporter } = this.config;
         if ((options === null || options === void 0 ? void 0 : options.actionsDir) && transporter) {
@@ -26,10 +27,10 @@ class App {
         return this.moleculerTransport.act(service, action, params, options);
     }
     async run() {
-        var _a, _b;
+        var _a, _b, _c, _d;
         const promises = [
             (_a = App.mongoResource) === null || _a === void 0 ? void 0 : _a.connect(),
-            (_b = App.moleculerTransport) === null || _b === void 0 ? void 0 : _b.listen()
+            (_b = App.moleculerTransport) === null || _b === void 0 ? void 0 : _b.listen((_c = this.options.api) === null || _c === void 0 ? void 0 : _c.express, (_d = this.options.api) === null || _d === void 0 ? void 0 : _d.settings)
         ];
         Promise.all(promises);
     }
