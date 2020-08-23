@@ -13,6 +13,7 @@ const fs_1 = require("fs");
 const path_1 = require("path");
 const directory_1 = require("../helpers/directory");
 const DEFAULT_ACTION_DIR = 'actions';
+const DEFAULT_API_URI = '/api';
 class MoleculerTransport {
     constructor(transporter, serviceName, actionsDir = DEFAULT_ACTION_DIR) {
         this.transporter = transporter;
@@ -22,16 +23,17 @@ class MoleculerTransport {
     async act(service, action, params, options) {
         return this.broker.call(`${service}.${action}`, params, options);
     }
-    async listen() {
+    async listen(express, settings) {
         const actionDir = path_1.resolve('dist', this.actionsDir);
         const stats = await fs_1.promises.stat(actionDir);
         if (!stats.isDirectory()) {
             await fs_1.promises.mkdir(actionDir);
         }
         const actions = await this.initActions(actionDir);
-        this.broker = this.createService(this.serviceName, actions, {
-            transporter: this.transporter
-        });
+        this.broker = this.createService(this.serviceName, actions, settings);
+        if (express === null || express === void 0 ? void 0 : express.use) {
+            express.use(DEFAULT_API_URI, this.broker.express());
+        }
         await this.broker.start();
         console.info('Listening actions: ', Object.keys(actions));
     }
@@ -56,9 +58,9 @@ class MoleculerTransport {
         }
         return actions;
     }
-    createService(name, actions, options) {
-        const broker = new moleculer_1.ServiceBroker(options);
-        broker.createService({ name, actions });
+    createService(name, actions, settings) {
+        const broker = new moleculer_1.ServiceBroker({ transporter: this.transporter });
+        broker.createService({ name, actions, settings });
         return broker;
     }
 }

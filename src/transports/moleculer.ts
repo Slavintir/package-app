@@ -1,6 +1,8 @@
-import { ServiceBroker, BrokerOptions, Context, CallingOptions } from 'moleculer';
+import { ServiceBroker, BrokerOptions, Context, CallingOptions, ServiceSettingSchema } from 'moleculer';
 import { promises as fs, Stats } from 'fs';
-import { resolve, extname, } from 'path';
+import { resolve, extname } from 'path';
+import { Express } from 'express';
+
 
 import { DirectoryHelper } from '../helpers/directory';
 
@@ -8,6 +10,7 @@ import { ServiceName } from '../interfaces/app';
 import { Action, Actions, ActionName } from '../interfaces/app/actions';
 
 const DEFAULT_ACTION_DIR: string = 'actions';
+const DEFAULT_API_URI: string = '/api';
 
 export class MoleculerTransport {
     private broker!: ServiceBroker;
@@ -22,7 +25,7 @@ export class MoleculerTransport {
         return this.broker.call(`${service}.${action}`, params, options);
     }
 
-    async listen(): Promise<void> {
+    async listen(express?: Express, settings?: ServiceSettingSchema): Promise<void> {
         const actionDir: string = resolve('dist', this.actionsDir);
         const stats: Stats = await fs.stat(actionDir);
 
@@ -31,10 +34,11 @@ export class MoleculerTransport {
         }
 
         const actions: Actions = await this.initActions(actionDir);
+        this.broker = this.createService(this.serviceName, actions, settings);
 
-        this.broker = this.createService(this.serviceName, actions, {
-            transporter: this.transporter
-        });
+        if (express?.use) {
+            express.use(DEFAULT_API_URI, this.broker.express());
+        }
 
         await this.broker.start();
         console.info('Listening actions: ', Object.keys(actions));
@@ -53,9 +57,9 @@ export class MoleculerTransport {
         return actions;
     }
 
-    private createService(name: string, actions: any, options: BrokerOptions): ServiceBroker {
-        const broker: ServiceBroker = new ServiceBroker(options);
-        broker.createService({ name, actions });
+    private createService(name: string, actions: Actions, settings?: ServiceSettingSchema): ServiceBroker {
+        const broker: ServiceBroker = new ServiceBroker({ transporter: this.transporter });
+        broker.createService({ name, actions, settings });
 
         return broker;
     }
