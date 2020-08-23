@@ -35,7 +35,7 @@ class MoleculerTransport {
         }
         const actions = await this.initActions(actionDir);
         this.broker = this.createService(this.serviceName, actions, settings);
-        if (express === null || express === void 0 ? void 0 : express.use) {
+        if ((express === null || express === void 0 ? void 0 : express.use) && this.broker.express) {
             express.use(DEFAULT_API_URI, this.broker.express());
         }
         await this.broker.start();

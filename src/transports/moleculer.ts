@@ -36,7 +36,7 @@ export class MoleculerTransport {
         const actions: Actions = await this.initActions(actionDir);
         this.broker = this.createService(this.serviceName, actions, settings);
 
-        if (express?.use) {
+        if (express?.use && this.broker.express) {
             express.use(DEFAULT_API_URI, this.broker.express());
         }
 
