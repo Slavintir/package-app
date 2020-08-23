@@ -6,7 +6,8 @@ export interface MongoDbConfig {
 }
 
 export enum ServiceName {
-    Gateway = 'gateway'
+    Gateway = 'gateway',
+    Auth = 'auth'
 }
 
 export type AppConfig = {
