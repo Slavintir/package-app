@@ -6,11 +6,15 @@ var __asyncValues = (this && this.__asyncValues) || function (o) {
     function verb(n) { i[n] = o[n] && function (v) { return new Promise(function (resolve, reject) { v = o[n](v), settle(resolve, reject, v.done, v.value); }); }; }
     function settle(resolve, reject, d, v) { Promise.resolve(v).then(function(v) { resolve({ value: v, done: d }); }, reject); }
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.MoleculerTransport = void 0;
 const moleculer_1 = require("moleculer");
 const fs_1 = require("fs");
 const path_1 = require("path");
+const moleculer_web_1 = __importDefault(require("moleculer-web"));
 const directory_1 = require("../helpers/directory");
 const DEFAULT_ACTION_DIR = 'actions';
 const DEFAULT_API_URI = '/api';
@@ -60,7 +64,7 @@ class MoleculerTransport {
     }
     createService(name, actions, settings) {
         const broker = new moleculer_1.ServiceBroker({ transporter: this.transporter });
-        broker.createService({ name, actions, settings });
+        broker.createService({ mixins: moleculer_web_1.default.mixins, name, actions, settings });
         return broker;
     }
 }
