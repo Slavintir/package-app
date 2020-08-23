@@ -64,7 +64,7 @@ class MoleculerTransport {
     }
     createService(name, actions, settings) {
         const broker = new moleculer_1.ServiceBroker({ transporter: this.transporter });
-        broker.createService({ mixins: moleculer_web_1.default.mixins, name, actions, settings });
+        broker.createService({ mixins: [moleculer_web_1.default], name, actions, settings });
         return broker;
     }
 }

@@ -2,7 +2,7 @@ import { ServiceBroker, Context, CallingOptions, ServiceSettingSchema } from 'mo
 import { promises as fs, Stats } from 'fs';
 import { resolve, extname } from 'path';
 import { Express } from 'express';
-import MoleculerWeb from 'moleculer-web';
+import ApiService from 'moleculer-web';
 
 import { DirectoryHelper } from '../helpers/directory';
 
@@ -59,7 +59,7 @@ export class MoleculerTransport {
 
     private createService(name: string, actions: Actions, settings?: ServiceSettingSchema): ServiceBroker {
         const broker: ServiceBroker = new ServiceBroker({ transporter: this.transporter });
-        broker.createService({ mixins: MoleculerWeb.mixins, name, actions, settings });
+        broker.createService({ mixins: [ApiService], name, actions, settings });
 
         return broker;
     }
