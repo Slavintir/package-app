@@ -1,8 +1,8 @@
-import { ServiceBroker, Context, CallingOptions, ServiceSettingSchema } from 'moleculer';
+import { ServiceBroker, Context, CallingOptions, ServiceSettingSchema, Service } from 'moleculer';
 import { promises as fs, Stats } from 'fs';
 import { resolve, extname } from 'path';
 import { Express } from 'express';
-import ApiService from 'moleculer-web';
+import ApiGateway from 'moleculer-web';
 
 import { DirectoryHelper } from '../helpers/directory';
 
@@ -10,7 +10,7 @@ import { ServiceName } from '../interfaces/app';
 import { Action, Actions, ActionName } from '../interfaces/app/actions';
 
 const DEFAULT_ACTION_DIR: string = 'actions';
-const DEFAULT_API_URI: string = '/api';
+const DEFAULT_API_URI: string = '/';
 
 export class MoleculerTransport {
     private broker!: ServiceBroker;
@@ -34,10 +34,11 @@ export class MoleculerTransport {
         }
 
         const actions: Actions = await this.initActions(actionDir);
-        this.broker = this.createService(this.serviceName, actions, settings);
+        this.broker = new ServiceBroker({ transporter: this.transporter });
+        const svc: Service = this.createService(this.serviceName, actions, this.broker, settings);
 
-        if (express?.use && this.broker.express) {
-            express.use(DEFAULT_API_URI, this.broker.express());
+        if (express?.use) {
+            express.use(DEFAULT_API_URI, svc.express());
         }
 
         await this.broker.start();
@@ -57,10 +58,7 @@ export class MoleculerTransport {
         return actions;
     }
 
-    private createService(name: string, actions: Actions, settings?: ServiceSettingSchema): ServiceBroker {
-        const broker: ServiceBroker = new ServiceBroker({ transporter: this.transporter });
-        broker.createService({ mixins: [ApiService], name, actions, settings });
-
-        return broker;
+    private createService(name: string, actions: Actions, broker: ServiceBroker, settings?: ServiceSettingSchema): Service {
+        return broker.createService({ name, actions, settings, mixins: [ApiGateway] });
     }
 }

@@ -17,7 +17,7 @@ const path_1 = require("path");
 const moleculer_web_1 = __importDefault(require("moleculer-web"));
 const directory_1 = require("../helpers/directory");
 const DEFAULT_ACTION_DIR = 'actions';
-const DEFAULT_API_URI = '/api';
+const DEFAULT_API_URI = '/';
 class MoleculerTransport {
     constructor(transporter, serviceName, actionsDir = DEFAULT_ACTION_DIR) {
         this.transporter = transporter;
@@ -34,9 +34,10 @@ class MoleculerTransport {
             await fs_1.promises.mkdir(actionDir);
         }
         const actions = await this.initActions(actionDir);
-        this.broker = this.createService(this.serviceName, actions, settings);
-        if ((express === null || express === void 0 ? void 0 : express.use) && this.broker.express) {
-            express.use(DEFAULT_API_URI, this.broker.express());
+        this.broker = new moleculer_1.ServiceBroker({ transporter: this.transporter });
+        const svc = this.createService(this.serviceName, actions, this.broker, settings);
+        if (express === null || express === void 0 ? void 0 : express.use) {
+            express.use(DEFAULT_API_URI, svc.express());
         }
         await this.broker.start();
         console.info('Listening actions: ', Object.keys(actions));
@@ -62,10 +63,8 @@ class MoleculerTransport {
         }
         return actions;
     }
-    createService(name, actions, settings) {
-        const broker = new moleculer_1.ServiceBroker({ transporter: this.transporter });
-        broker.createService({ mixins: [moleculer_web_1.default], name, actions, settings });
-        return broker;
+    createService(name, actions, broker, settings) {
+        return broker.createService({ name, actions, settings, mixins: [moleculer_web_1.default] });
     }
 }
 exports.MoleculerTransport = MoleculerTransport;
