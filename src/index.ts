@@ -12,17 +12,17 @@ export class App {
     private static instance: App;
     private static moleculerTransport?: MoleculerTransport;
     private static mongoResource?: MongodbResource;
-    private config: AppConfig = require(resolve('dist', 'env', 'local.js')).default;
+    static config: AppConfig = require(resolve('dist', 'env', 'local.js')).default;
 
     constructor(private options: AppOptions) {
-        const { serviceName, transporter } = this.config;
+        const { serviceName, transporter } = App.config;
 
         if (options?.actionsDir && transporter) {
             App.moleculerTransport = new MoleculerTransport(transporter, serviceName, options.actionsDir);
         }
 
-        if (this.config.mongodb) {
-            App.mongoResource = new MongodbResource(this.config.mongodb);
+        if (App.config.mongodb) {
+            App.mongoResource = new MongodbResource(App.config.mongodb);
         }
     }
 

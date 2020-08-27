@@ -8,13 +8,12 @@ const errors_1 = require("./errors");
 class App {
     constructor(options) {
         this.options = options;
-        this.config = require(path_1.resolve('dist', 'env', 'local.js')).default;
-        const { serviceName, transporter } = this.config;
+        const { serviceName, transporter } = App.config;
         if ((options === null || options === void 0 ? void 0 : options.actionsDir) && transporter) {
             App.moleculerTransport = new moleculer_1.MoleculerTransport(transporter, serviceName, options.actionsDir);
         }
-        if (this.config.mongodb) {
-            App.mongoResource = new mongodb_1.MongodbResource(this.config.mongodb);
+        if (App.config.mongodb) {
+            App.mongoResource = new mongodb_1.MongodbResource(App.config.mongodb);
         }
     }
     static getInstance(options) {
@@ -36,4 +35,5 @@ class App {
     }
 }
 exports.App = App;
+App.config = require(path_1.resolve('dist', 'env', 'local.js')).default;
 //# sourceMappingURL=index.js.map
