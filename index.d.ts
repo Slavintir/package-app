@@ -11,6 +11,7 @@ declare module 'package-app' {
 
         run(): Promise<void>;
 
+        static getConfig<T extends AppConfig>(): T;
         static getInstance(options?: AppOptions): App;
         static act<T, P>(service: ServiceName, action: ActionName, params: P, options?: CallingOptions): Promise<T>;
     }
