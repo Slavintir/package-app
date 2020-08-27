@@ -16,6 +16,9 @@ class App {
             App.mongoResource = new mongodb_1.MongodbResource(App.config.mongodb);
         }
     }
+    static getConfig() {
+        return App.config;
+    }
     static getInstance(options) {
         return App.instance ? App.instance : new App(options);
     }

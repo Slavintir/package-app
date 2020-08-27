@@ -12,7 +12,7 @@ export class App {
     private static instance: App;
     private static moleculerTransport?: MoleculerTransport;
     private static mongoResource?: MongodbResource;
-    static config: AppConfig = require(resolve('dist', 'env', 'local.js')).default;
+    private static config: AppConfig = require(resolve('dist', 'env', 'local.js')).default;
 
     constructor(private options: AppOptions) {
         const { serviceName, transporter } = App.config;
@@ -24,6 +24,10 @@ export class App {
         if (App.config.mongodb) {
             App.mongoResource = new MongodbResource(App.config.mongodb);
         }
+    }
+
+    static getConfig<T extends AppConfig>(): T {
+        return <T>App.config;
     }
 
     static getInstance(options: AppOptions): App {
