@@ -36,7 +36,7 @@ class MoleculerTransport {
         const actions = await this.initActions(actionDir);
         this.broker = new moleculer_1.ServiceBroker({ transporter: this.transporter });
         const svc = this.createService(this.serviceName, actions, this.broker, settings);
-        if (express === null || express === void 0 ? void 0 : express.use) {
+        if (express) {
             express.use(DEFAULT_API_URI, svc.express());
         }
         await this.broker.start();
@@ -50,7 +50,7 @@ class MoleculerTransport {
                 const actionDir = _c.value;
                 if (expansions.includes(path_1.extname(actionDir))) {
                     const { actionName, handler } = require(actionDir).default;
-                    actions[actionName] = async (ctx) => handler(ctx.params);
+                    actions[actionName] = async (ctx) => handler(ctx);
                 }
             }
         }
@@ -64,7 +64,8 @@ class MoleculerTransport {
         return actions;
     }
     createService(name, actions, broker, settings) {
-        return broker.createService({ name, actions, settings, mixins: [moleculer_web_1.default] });
+        let schema = settings ? { name, actions, settings, mixins: [moleculer_web_1.default] } : { name, actions };
+        return broker.createService(schema);
     }
 }
 exports.MoleculerTransport = MoleculerTransport;

@@ -1,4 +1,4 @@
-import { ServiceBroker, Context, CallingOptions, ServiceSettingSchema, Service } from 'moleculer';
+import { ServiceBroker, Context, CallingOptions, ServiceSettingSchema, Service, ServiceSchema } from 'moleculer';
 import { promises as fs, Stats } from 'fs';
 import { resolve, extname } from 'path';
 import { Express } from 'express';
@@ -37,7 +37,7 @@ export class MoleculerTransport {
         this.broker = new ServiceBroker({ transporter: this.transporter });
         const svc: Service = this.createService(this.serviceName, actions, this.broker, settings);
 
-        if (express?.use) {
+        if (express) {
             express.use(DEFAULT_API_URI, svc.express());
         }
 
@@ -51,7 +51,7 @@ export class MoleculerTransport {
         for await (const actionDir of DirectoryHelper.recursiveFindFile(actionsDir)) {
             if (expansions.includes(extname(actionDir))) {
                 const { actionName, handler }: Action = require(actionDir).default;
-                actions[actionName] = async (ctx: Context<any, any>) => handler(ctx.params);
+                actions[actionName] = async (ctx: Context<any, any>) => handler(ctx);
             }
         }
 
@@ -59,6 +59,8 @@ export class MoleculerTransport {
     }
 
     private createService(name: string, actions: Actions, broker: ServiceBroker, settings?: ServiceSettingSchema): Service {
-        return broker.createService({ name, actions, settings, mixins: [ApiGateway] });
+        let schema: ServiceSchema = settings ? { name, actions, settings, mixins: [ApiGateway] } : { name, actions };
+        
+        return broker.createService(schema);
     }
 }

@@ -1,6 +1,6 @@
-import { ActionHandler as MoleculerActionHandler } from 'moleculer';
+import { ActionHandler as MoleculerActionHandler, Context } from 'moleculer';
 
-export type ActionHandler = (args: any) => Promise<unknown>;
+export type ActionHandler = (args: Context) => Promise<unknown>;
 
 export type Actions = { [name in ActionName]: MoleculerActionHandler };
 
