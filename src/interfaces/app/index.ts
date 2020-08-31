@@ -1,6 +1,7 @@
-import { ConnectionOptions } from 'mongoose';
 import { Express } from 'express';
+import { ConnectionOptions } from 'mongoose';
 import { ServiceSettingSchema } from 'moleculer';
+import { Options } from 'amqplib';
 
 export interface MongoDbConfig {
     uris: string;
@@ -12,10 +13,16 @@ export enum ServiceName {
     Auth = 'auth'
 }
 
+export interface RabbitConfig {
+    host: string;
+    port: number;
+}
+
 export interface AppConfig {
     serviceName: string;
     transporter?: string;
     mongodb?: MongoDbConfig;
+    rabbit?: RabbitConfig;
 }
 
 export interface AppApiOptions {

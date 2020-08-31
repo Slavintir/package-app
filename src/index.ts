@@ -2,6 +2,7 @@ import { CallingOptions } from 'moleculer';
 import { resolve } from 'path';
 
 import { MoleculerTransport } from './transports/moleculer';
+import { RabbitMqTransport } from './transports/rabbitmq';
 
 import { MongodbResource } from './resources/mongodb';
 
@@ -11,6 +12,7 @@ import { UnexpectedError } from './errors';
 export class App {
     private static instance: App;
     private static moleculerTransport?: MoleculerTransport;
+    private static amqpTransport?: RabbitMqTransport;
     private static mongoResource?: MongodbResource;
     private static config: AppConfig = require(resolve('dist', 'env', 'local.js')).default;
 
@@ -23,6 +25,10 @@ export class App {
 
         if (App.config.mongodb) {
             App.mongoResource = new MongodbResource(App.config.mongodb);
+        }
+
+        if (App.config.rabbit) {
+            App.amqpTransport = new RabbitMqTransport();
         }
     }
 
@@ -42,10 +48,19 @@ export class App {
         return this.moleculerTransport.act(service, action, params, options);
     }
 
+    static publish(queue: string, message: string): boolean | undefined {
+        return this.amqpTransport?.publish(queue, message);
+    }
+
+    static async createChannel(queue: string): Promise<void> {
+        return this.amqpTransport?.createChannel(queue);
+    }
+
     async run(): Promise<void> {
         const promises = [
             App.mongoResource?.connect(),
-            App.moleculerTransport?.listen(this.options.api?.express, this.options.api?.settings)
+            App.moleculerTransport?.listen(this.options.api?.express, this.options.api?.settings),
+            App.amqpTransport?.listen()
         ];
 
         Promise.all(promises);
