@@ -5,7 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.RabbitMqTransport = void 0;
 const amqplib_1 = __importDefault(require("amqplib"));
-const errors_1 = require("src/errors");
+const errors_1 = require("../errors");
 class RabbitMqTransport {
     constructor() {
         this.queues = new Map();

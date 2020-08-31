@@ -1,13 +1,14 @@
 import { CallingOptions } from 'moleculer';
 import { resolve } from 'path';
 
+import { UnexpectedError } from './errors';
+
 import { MoleculerTransport } from './transports/moleculer';
 import { RabbitMqTransport } from './transports/rabbitmq';
 
 import { MongodbResource } from './resources/mongodb';
 
 import { AppOptions, AppConfig, ServiceName, ActionName } from './interfaces/app';
-import { UnexpectedError } from './errors';
 
 export class App {
     private static instance: App;

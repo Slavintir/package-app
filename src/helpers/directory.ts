@@ -1,5 +1,5 @@
 import { resolve } from 'path';
-import { promises as fs, Dirent } from 'fs';
+import { promises as fs } from 'fs';
 
 export class DirectoryHelper {
     static async* recursiveFindFile(directoryPath: string): AsyncGenerator<string> {

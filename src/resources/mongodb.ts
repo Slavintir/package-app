@@ -1,4 +1,5 @@
 import { connect } from 'mongoose';
+
 import { MongoDbConfig } from '../interfaces/app';
 
 const DEFAULT_RECONNECT_INTERVAL: number = 5000;

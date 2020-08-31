@@ -1,7 +1,6 @@
 import { Express } from 'express';
 import { ConnectionOptions } from 'mongoose';
 import { ServiceSettingSchema } from 'moleculer';
-import { Options } from 'amqplib';
 
 export interface MongoDbConfig {
     uris: string;

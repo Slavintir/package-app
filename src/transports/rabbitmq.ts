@@ -1,5 +1,5 @@
 import amqp, { Connection, Channel } from 'amqplib';
-import { UnexpectedError } from 'src/errors';
+import { UnexpectedError } from '../errors';
 
 export class RabbitMqTransport {
     private connection!: Connection;

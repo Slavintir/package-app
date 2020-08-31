@@ -2,10 +2,10 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.App = void 0;
 const path_1 = require("path");
+const errors_1 = require("./errors");
 const moleculer_1 = require("./transports/moleculer");
 const rabbitmq_1 = require("./transports/rabbitmq");
 const mongodb_1 = require("./resources/mongodb");
-const errors_1 = require("./errors");
 class App {
     constructor(options) {
         this.options = options;
