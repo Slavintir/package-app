@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.App = void 0;
 const path_1 = require("path");
 const moleculer_1 = require("./transports/moleculer");
+const rabbitmq_1 = require("./transports/rabbitmq");
 const mongodb_1 = require("./resources/mongodb");
 const errors_1 = require("./errors");
 class App {
@@ -14,6 +15,9 @@ class App {
         }
         if (App.config.mongodb) {
             App.mongoResource = new mongodb_1.MongodbResource(App.config.mongodb);
+        }
+        if (App.config.rabbit) {
+            App.amqpTransport = new rabbitmq_1.RabbitMqTransport();
         }
     }
     static getConfig() {
@@ -28,11 +32,20 @@ class App {
         }
         return this.moleculerTransport.act(service, action, params, options);
     }
+    static publish(queue, message) {
+        var _a;
+        return (_a = this.amqpTransport) === null || _a === void 0 ? void 0 : _a.publish(queue, message);
+    }
+    static async createChannel(queue) {
+        var _a;
+        return (_a = this.amqpTransport) === null || _a === void 0 ? void 0 : _a.createChannel(queue);
+    }
     async run() {
-        var _a, _b, _c, _d;
+        var _a, _b, _c, _d, _e;
         const promises = [
             (_a = App.mongoResource) === null || _a === void 0 ? void 0 : _a.connect(),
-            (_b = App.moleculerTransport) === null || _b === void 0 ? void 0 : _b.listen((_c = this.options.api) === null || _c === void 0 ? void 0 : _c.express, (_d = this.options.api) === null || _d === void 0 ? void 0 : _d.settings)
+            (_b = App.moleculerTransport) === null || _b === void 0 ? void 0 : _b.listen((_c = this.options.api) === null || _c === void 0 ? void 0 : _c.express, (_d = this.options.api) === null || _d === void 0 ? void 0 : _d.settings),
+            (_e = App.amqpTransport) === null || _e === void 0 ? void 0 : _e.listen()
         ];
         Promise.all(promises);
     }
