@@ -1,17 +1,12 @@
-import { ActionHandler as MoleculerActionHandler } from 'moleculer';
+import { ActionHandler as MoleculerActionHandler, Context } from 'moleculer';
 
-export type ActionHandler<R = object> = (params: unknown) => Promise<R>;
+export type ActionHandler = (args: Context<any, any>) => Promise<unknown>;
 
 export type Actions = { [name in ActionName]: MoleculerActionHandler };
 
-/**
- * R - Action response
- */
-export interface Action<R = object> {
+export interface Action {
     readonly actionName: ActionName;
-    handler: ActionHandler<R>;
+    handler: ActionHandler;
 }
 
-export enum ActionName {
-
-}
+export enum ActionName { }
