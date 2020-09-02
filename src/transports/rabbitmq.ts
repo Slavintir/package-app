@@ -1,18 +1,18 @@
 import amqp, { Channel, Connection, ConsumeMessage } from 'amqplib';
 
 import { EventPayload, EventListenerHandler, Event } from '../interfaces/app/amqp';
-
-const RECONNECT_TIMEOUT_MS = 5000;
+import { RabbitConfig } from 'src/interfaces/app';
 
 export class RabbitMqTransport {
     private channel!: Channel;
     private connection!: Connection;
     private listeners: Map<string, EventListenerHandler> = new Map();
 
-    async listen(address: string = 'amqp://localhost', reconnect: number = RECONNECT_TIMEOUT_MS): Promise<void> {
+    async listen(config: RabbitConfig = { host: 'localhost', port: 5672, reconnectTimeoutMs: 5000 }): Promise<void> {
+        const address = `amqp://${config.host}:${config.port}`;
         this.connection = await amqp.connect(address);
         if (!this.connection) {
-            setTimeout(this.listen.bind(this, address), reconnect);
+            setTimeout(this.listen.bind(this, config), config.reconnectTimeoutMs);
         }
 
         console.log('Success connect to rabbit mq', { address });

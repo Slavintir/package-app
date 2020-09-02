@@ -15,6 +15,7 @@ export enum ServiceName {
 export interface RabbitConfig {
     host: string;
     port: number;
+    reconnectTimeoutMs?: number;
 }
 
 export interface AppConfig {

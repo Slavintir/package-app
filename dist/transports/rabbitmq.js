@@ -5,25 +5,53 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.RabbitMqTransport = void 0;
 const amqplib_1 = __importDefault(require("amqplib"));
-const errors_1 = require("../errors");
 class RabbitMqTransport {
     constructor() {
-        this.queues = new Map();
+        this.listeners = new Map();
     }
-    async listen() {
-        this.connection = await amqplib_1.default.connect('amqp://localhost');
-    }
-    publish(queue, message) {
-        const channel = this.queues.get(queue);
-        if (!channel) {
-            throw new errors_1.UnexpectedError(`Query ${queue} not found`);
+    async listen(config = { host: 'localhost', port: 5672, reconnectTimeoutMs: 5000 }) {
+        const address = `amqp://${config.host}:${config.port}`;
+        this.connection = await amqplib_1.default.connect(address);
+        if (!this.connection) {
+            setTimeout(this.listen.bind(this, config), config.reconnectTimeoutMs);
         }
-        return channel.sendToQueue(queue, Buffer.from(message));
+        console.log('Success connect to rabbit mq', { address });
     }
-    async createChannel(queue) {
-        const channel = await this.connection.createChannel();
-        await channel.assertQueue(queue, { durable: false });
-        this.queues.set(queue, channel);
+    async createQueue(queueName) {
+        this.channel = await this.connection.createChannel();
+        const answer = await this.channel.assertQueue(queueName, { durable: true });
+        if (answer) {
+            console.log('Created queue', { queueName });
+        }
+    }
+    publish(queueName, payload) {
+        const jsonPayload = JSON.stringify(payload);
+        return this.channel.sendToQueue(queueName, Buffer.from(jsonPayload), { persistent: true });
+    }
+    async subscribe(queueName, eventName, handler) {
+        const key = this.createKey(queueName, eventName);
+        this.listeners.set(key, handler);
+        await this.channel.consume(queueName, this.messageReceiver);
+        console.info('Subscribed on %s', key);
+    }
+    async messageReceiver(message) {
+        if (!message) {
+            return;
+        }
+        const event = JSON.parse(message.content.toString());
+        const handler = this.listeners.get(this.createKey(message.queue, event.eventName));
+        if (typeof handler === 'function') {
+            return handler(event.payload, event.meta);
+        }
+        console.log('No processed event', { event });
+    }
+    /**
+     * Concat queueName: name and eventName: SOME_EVENT_NAME to name[EVENT_SOME_EVENT_NAME]
+     * @param queueName - Rabbit mq queue name
+     * @param eventName - Event name form
+     */
+    createKey(queueName = '', eventName = '') {
+        return `${queueName}[EVENT_${eventName.toUpperCase()}]`;
     }
 }
 exports.RabbitMqTransport = RabbitMqTransport;

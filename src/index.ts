@@ -49,19 +49,11 @@ export class App {
         return this.moleculerTransport.act(service, action, params, options);
     }
 
-    static publish(queue: string, message: string): boolean | undefined {
-        return this.amqpTransport?.publish(queue, message);
-    }
-
-    static async createChannel(queue: string): Promise<void> {
-        return this.amqpTransport?.createChannel(queue);
-    }
-
     async run(): Promise<void> {
         const promises = [
             App.mongoResource?.connect(),
             App.moleculerTransport?.listen(this.options.api?.express, this.options.api?.settings),
-            App.amqpTransport?.listen()
+            App.amqpTransport?.listen(App.config.rabbit)
         ];
 
         Promise.all(promises);

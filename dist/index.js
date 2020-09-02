@@ -32,14 +32,6 @@ class App {
         }
         return this.moleculerTransport.act(service, action, params, options);
     }
-    static publish(queue, message) {
-        var _a;
-        return (_a = this.amqpTransport) === null || _a === void 0 ? void 0 : _a.publish(queue, message);
-    }
-    static async createChannel(queue) {
-        var _a;
-        return (_a = this.amqpTransport) === null || _a === void 0 ? void 0 : _a.createChannel(queue);
-    }
     async run() {
         var _a, _b, _c, _d, _e;
         const promises = [
