@@ -1,26 +1,66 @@
-import amqp, { Connection, Channel } from 'amqplib';
-import { UnexpectedError } from '../errors';
+import amqp, { Channel, Connection, ConsumeMessage } from 'amqplib';
+
+import { EventPayload, EventListenerHandler, Event } from '../interfaces/app/amqp';
+
+const RECONNECT_TIMEOUT_MS = 5000;
 
 export class RabbitMqTransport {
+    private channel!: Channel;
     private connection!: Connection;
-    private queues: Map<string, Channel> = new Map();
+    private listeners: Map<string, EventListenerHandler> = new Map();
 
-    async listen(): Promise<void> {
-        this.connection = await amqp.connect('amqp://localhost');
-    }
-
-    publish(queue: string, message: string): boolean {
-        const channel = this.queues.get(queue);
-
-        if (!channel) {
-            throw new UnexpectedError(`Query ${queue} not found`);
+    async listen(address: string = 'amqp://localhost', reconnect: number = RECONNECT_TIMEOUT_MS): Promise<void> {
+        this.connection = await amqp.connect(address);
+        if (!this.connection) {
+            setTimeout(this.listen.bind(this, address), reconnect);
         }
-        return channel.sendToQueue(queue, Buffer.from(message));
+
+        console.log('Success connect to rabbit mq', { address });
     }
 
-    async createChannel(queue: string): Promise<void> {
-        const channel = await this.connection.createChannel();
-        await channel.assertQueue(queue, { durable: false });
-        this.queues.set(queue, channel);
+    async createQueue(queueName: string): Promise<void> {
+        this.channel = await this.connection.createChannel();
+        const answer = await this.channel.assertQueue(queueName, { durable: true });
+
+        if (answer) {
+            console.log('Created queue', { queueName });
+        }
+    }
+
+    publish(queueName: string, payload: EventPayload): boolean {
+        const jsonPayload: string = JSON.stringify(payload);
+
+        return this.channel.sendToQueue(queueName, Buffer.from(jsonPayload), { persistent: true });
+    }
+
+    async subscribe(queueName: string, eventName: string, handler: EventListenerHandler): Promise<void> {
+        const key = this.createKey(queueName, eventName);
+        this.listeners.set(key, handler);
+        await this.channel.consume(queueName, this.messageReceiver);
+        console.info('Subscribed on %s', key);
+    }
+
+    private async messageReceiver(message: ConsumeMessage & { queue?: string } | null): Promise<void> {
+        if (!message) {
+            return;
+        }
+
+        const event: Event = JSON.parse(message.content.toString());
+        const handler = this.listeners.get(this.createKey(message.queue, event.eventName));
+
+        if (typeof handler === 'function') {
+            return handler(event.payload, event.meta);
+        }
+
+        console.log('No processed event', { event });
+    }
+
+    /**
+     * Concat queueName: name and eventName: SOME_EVENT_NAME to name[EVENT_SOME_EVENT_NAME]
+     * @param queueName - Rabbit mq queue name
+     * @param eventName - Event name form
+     */
+    private createKey(queueName: string = '', eventName: string = ''): string {
+        return `${queueName}[EVENT_${eventName.toUpperCase()}]`;
     }
 }
