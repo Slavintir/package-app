@@ -65,6 +65,6 @@ export class App {
             App.amqpTransport?.listen(App.config.rabbit)
         ];
 
-        Promise.all(promises);
+        await Promise.all(promises);
     }
 }

@@ -45,7 +45,7 @@ class App {
             (_b = App.moleculerTransport) === null || _b === void 0 ? void 0 : _b.listen((_c = this.options.api) === null || _c === void 0 ? void 0 : _c.express, (_d = this.options.api) === null || _d === void 0 ? void 0 : _d.settings),
             (_e = App.amqpTransport) === null || _e === void 0 ? void 0 : _e.listen(App.config.rabbit)
         ];
-        Promise.all(promises);
+        await Promise.all(promises);
     }
 }
 exports.App = App;
