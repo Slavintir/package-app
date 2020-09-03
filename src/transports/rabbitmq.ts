@@ -37,7 +37,7 @@ export class RabbitMqTransport {
     async subscribe(queueName: string, eventName: string, handler: EventListenerHandler): Promise<void> {
         const key = this.createKey(eventName);
         this.listeners.set(key, handler);
-        await this.channel.consume(queueName, this.messageReceiver);
+        await this.channel.consume(queueName, this.messageReceiver.bind(this));
         console.info('Subscribed on %s', key);
     }
 
