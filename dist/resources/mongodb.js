@@ -2,24 +2,22 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.MongodbResource = void 0;
 const mongoose_1 = require("mongoose");
+var ConnectionStatus;
+(function (ConnectionStatus) {
+    ConnectionStatus[ConnectionStatus["Disconnected"] = 0] = "Disconnected";
+    ConnectionStatus[ConnectionStatus["Connected"] = 1] = "Connected";
+    ConnectionStatus[ConnectionStatus["Connecting"] = 2] = "Connecting";
+    ConnectionStatus[ConnectionStatus["Disconnecting"] = 3] = "Disconnecting";
+})(ConnectionStatus || (ConnectionStatus = {}));
 class MongodbResource {
     async connect(config) {
         if (!config) {
             return;
         }
-        await mongoose_1.connect(config.uri, config.options);
-        mongoose_1.connection.on('open', () => {
-            console.info('Open connection to mongo server.');
-        });
-        mongoose_1.connection.on('connected', () => {
-            console.info('Connected to mongo server.');
-        });
-        mongoose_1.connection.on('reconnect', () => {
-            console.log('Reconnect to mongo server.');
-        });
-        mongoose_1.connection.on('error', (err) => {
-            console.error('Error connection to mongo server!', err);
-        });
+        const db = await mongoose_1.connect(config.uri, config.options);
+        if (db.connection.readyState === ConnectionStatus.Connected) {
+            console.info('Connected to mongo db');
+        }
     }
 }
 exports.MongodbResource = MongodbResource;

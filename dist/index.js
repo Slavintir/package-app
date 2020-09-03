@@ -38,6 +38,9 @@ class App {
     static async publish(queueName, payload) {
         return App.amqpTransport.publish(queueName, payload);
     }
+    static async subscribe(queueName, eventName, handler) {
+        return App.amqpTransport.subscribe(queueName, eventName, handler);
+    }
     async run() {
         var _a, _b, _c, _d, _e;
         const promises = [
