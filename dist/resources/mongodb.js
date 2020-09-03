@@ -7,17 +7,17 @@ class MongodbResource {
         if (!config) {
             return;
         }
-        const connection = await mongoose_1.createConnection(config.uri, config.options);
-        connection.on('open', () => {
+        await mongoose_1.connect(config.uri, config.options);
+        mongoose_1.connection.on('open', () => {
             console.info('Open connection to mongo server.');
         });
-        connection.on('connected', () => {
+        mongoose_1.connection.on('connected', () => {
             console.info('Connected to mongo server.');
         });
-        connection.on('reconnect', () => {
+        mongoose_1.connection.on('reconnect', () => {
             console.log('Reconnect to mongo server.');
         });
-        connection.on('error', (err) => {
+        mongoose_1.connection.on('error', (err) => {
             console.error('Error connection to mongo server!', err);
         });
     }

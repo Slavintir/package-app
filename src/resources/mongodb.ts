@@ -1,5 +1,5 @@
 import { MongoError } from 'mongodb';
-import { createConnection } from 'mongoose';
+import { connect, connection } from 'mongoose';
 
 import { MongoDbConfig } from '../interfaces/app';
 
@@ -9,7 +9,7 @@ export class MongodbResource {
             return;
         }
 
-        const connection = await createConnection(config.uri, config.options);
+        await connect(config.uri, config.options);
 
         connection.on('open', () => {
             console.info('Open connection to mongo server.');
