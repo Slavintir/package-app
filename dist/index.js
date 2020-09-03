@@ -39,11 +39,11 @@ class App {
         return App.amqpTransport.publish(queueName, payload);
     }
     async run() {
-        var _a, _b;
+        var _a, _b, _c, _d, _e;
         const promises = [
-            App.mongoResource.connect(App.config.mongodb),
-            App.moleculerTransport.listen((_a = this.options.api) === null || _a === void 0 ? void 0 : _a.express, (_b = this.options.api) === null || _b === void 0 ? void 0 : _b.settings),
-            App.amqpTransport.listen(App.config.rabbit)
+            (_a = App.mongoResource) === null || _a === void 0 ? void 0 : _a.connect(App.config.mongodb),
+            (_b = App.moleculerTransport) === null || _b === void 0 ? void 0 : _b.listen((_c = this.options.api) === null || _c === void 0 ? void 0 : _c.express, (_d = this.options.api) === null || _d === void 0 ? void 0 : _d.settings),
+            (_e = App.amqpTransport) === null || _e === void 0 ? void 0 : _e.listen(App.config.rabbit)
         ];
         Promise.all(promises);
     }
