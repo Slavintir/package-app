@@ -9,7 +9,7 @@ import { RabbitMqTransport } from './transports/rabbitmq';
 import { MongodbResource } from './resources/mongodb';
 
 import { AppOptions, AppConfig, ServiceName, ActionName } from './interfaces/app';
-import { EventPayload, EventListenerHandler } from './interfaces/app/amqp';
+import { Event, EventListenerHandler } from './interfaces/app/amqp';
 
 export class App {
     private static instance: App;
@@ -54,8 +54,8 @@ export class App {
         return App.amqpTransport.createQueue(queueName);
     }
 
-    static async publish(queueName: string, payload: EventPayload): Promise<boolean> {
-        return App.amqpTransport.publish(queueName, payload);
+    static publish(queueName: string, event: Event): boolean {
+        return App.amqpTransport.publish(queueName, event);
     }
 
     static async subscribe(queueName: string, eventName: string, handler: EventListenerHandler): Promise<void> {

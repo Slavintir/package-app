@@ -25,8 +25,8 @@ class RabbitMqTransport {
             console.log('Created queue', { queueName });
         }
     }
-    publish(queueName, payload) {
-        const jsonPayload = JSON.stringify(payload);
+    publish(queueName, event) {
+        const jsonPayload = JSON.stringify(event);
         return this.channel.sendToQueue(queueName, Buffer.from(jsonPayload), { persistent: true });
     }
     async subscribe(queueName, eventName, handler) {
@@ -40,7 +40,7 @@ class RabbitMqTransport {
             return;
         }
         const event = JSON.parse(message.content.toString());
-        const handler = this.listeners.get(this.createKey(message.queue, event.eventName));
+        const handler = this.listeners.get(this.createKey(event.eventName));
         if (typeof handler === 'function') {
             return handler(event.payload, event.meta);
         }

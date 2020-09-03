@@ -28,8 +28,8 @@ export class RabbitMqTransport {
         }
     }
 
-    publish(queueName: string, payload: EventPayload): boolean {
-        const jsonPayload: string = JSON.stringify(payload);
+    publish(queueName: string, event: Event): boolean {
+        const jsonPayload: string = JSON.stringify(event);
 
         return this.channel.sendToQueue(queueName, Buffer.from(jsonPayload), { persistent: true });
     }
@@ -41,13 +41,13 @@ export class RabbitMqTransport {
         console.info('Subscribed on %s', key);
     }
 
-    private async messageReceiver(message: ConsumeMessage & { queue?: string } | null): Promise<void> {
+    private async messageReceiver(message: ConsumeMessage | null): Promise<void> {
         if (!message) {
             return;
         }
 
         const event: Event = JSON.parse(message.content.toString());
-        const handler = this.listeners.get(this.createKey(message.queue, event.eventName));
+        const handler = this.listeners.get(this.createKey(event.eventName));
 
         if (typeof handler === 'function') {
             return handler(event.payload, event.meta);

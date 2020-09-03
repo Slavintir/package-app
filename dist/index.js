@@ -35,8 +35,8 @@ class App {
     static createQueue(queueName) {
         return App.amqpTransport.createQueue(queueName);
     }
-    static async publish(queueName, payload) {
-        return App.amqpTransport.publish(queueName, payload);
+    static publish(queueName, event) {
+        return App.amqpTransport.publish(queueName, event);
     }
     static async subscribe(queueName, eventName, handler) {
         return App.amqpTransport.subscribe(queueName, eventName, handler);
