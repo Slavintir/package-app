@@ -35,7 +35,7 @@ export class RabbitMqTransport {
     }
 
     async subscribe(queueName: string, eventName: string, handler: EventListenerHandler): Promise<void> {
-        const key = this.createKey(queueName, eventName);
+        const key = this.createKey(eventName);
         this.listeners.set(key, handler);
         await this.channel.consume(queueName, this.messageReceiver);
         console.info('Subscribed on %s', key);
@@ -61,7 +61,7 @@ export class RabbitMqTransport {
      * @param queueName - Rabbit mq queue name
      * @param eventName - Event name form
      */
-    private createKey(queueName: string = '', eventName: string = ''): string {
-        return `${queueName}[EVENT_${eventName.toUpperCase()}]`;
+    private createKey(eventName: string = ''): string {
+        return `[EVENT_${eventName.toUpperCase()}]`;
     }
 }

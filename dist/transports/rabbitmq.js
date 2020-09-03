@@ -30,7 +30,7 @@ class RabbitMqTransport {
         return this.channel.sendToQueue(queueName, Buffer.from(jsonPayload), { persistent: true });
     }
     async subscribe(queueName, eventName, handler) {
-        const key = this.createKey(queueName, eventName);
+        const key = this.createKey(eventName);
         this.listeners.set(key, handler);
         await this.channel.consume(queueName, this.messageReceiver);
         console.info('Subscribed on %s', key);
@@ -51,8 +51,8 @@ class RabbitMqTransport {
      * @param queueName - Rabbit mq queue name
      * @param eventName - Event name form
      */
-    createKey(queueName = '', eventName = '') {
-        return `${queueName}[EVENT_${eventName.toUpperCase()}]`;
+    createKey(eventName = '') {
+        return `[EVENT_${eventName.toUpperCase()}]`;
     }
 }
 exports.RabbitMqTransport = RabbitMqTransport;
