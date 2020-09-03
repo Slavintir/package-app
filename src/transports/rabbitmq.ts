@@ -1,25 +1,26 @@
-import amqp, { Channel, Connection, ConsumeMessage } from 'amqplib';
+import amqp, { Channel, ConsumeMessage } from 'amqplib';
 
 import { EventPayload, EventListenerHandler, Event } from '../interfaces/app/amqp';
 import { RabbitConfig } from 'src/interfaces/app';
 
 export class RabbitMqTransport {
     private channel!: Channel;
-    private connection!: Connection;
     private listeners: Map<string, EventListenerHandler> = new Map();
 
     async listen(config: RabbitConfig = { host: 'localhost', port: 5672, reconnectTimeoutMs: 5000 }): Promise<void> {
         const address = `amqp://${config.host}:${config.port}`;
-        this.connection = await amqp.connect(address);
-        if (!this.connection) {
+        const connection = await amqp.connect(address);
+        if (!connection) {
             setTimeout(this.listen.bind(this, config), config.reconnectTimeoutMs);
-        }
 
+            return;
+        }
+        
+        this.channel = await connection.createChannel();
         console.log('Success connect to rabbit mq', { address });
     }
 
     async createQueue(queueName: string): Promise<void> {
-        this.channel = await this.connection.createChannel();
         const answer = await this.channel.assertQueue(queueName, { durable: true });
 
         if (answer) {

@@ -11,14 +11,15 @@ class RabbitMqTransport {
     }
     async listen(config = { host: 'localhost', port: 5672, reconnectTimeoutMs: 5000 }) {
         const address = `amqp://${config.host}:${config.port}`;
-        this.connection = await amqplib_1.default.connect(address);
-        if (!this.connection) {
+        const connection = await amqplib_1.default.connect(address);
+        if (!connection) {
             setTimeout(this.listen.bind(this, config), config.reconnectTimeoutMs);
+            return;
         }
+        this.channel = await connection.createChannel();
         console.log('Success connect to rabbit mq', { address });
     }
     async createQueue(queueName) {
-        this.channel = await this.connection.createChannel();
         const answer = await this.channel.assertQueue(queueName, { durable: true });
         if (answer) {
             console.log('Created queue', { queueName });
