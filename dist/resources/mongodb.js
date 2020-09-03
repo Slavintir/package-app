@@ -2,32 +2,24 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.MongodbResource = void 0;
 const mongoose_1 = require("mongoose");
-const DEFAULT_RECONNECT_INTERVAL = 5000;
 class MongodbResource {
-    constructor(config, interval = DEFAULT_RECONNECT_INTERVAL) {
-        this.config = config;
-        this.interval = interval;
-    }
-    async connect() {
-        const interval = setInterval(async () => {
-            if (await this.init()) {
-                console.info('Connected to mongodb. ', { uris: this.config.uris });
-                clearInterval(interval);
-                return;
-            }
-            console.info(`Next try connect to mongodb through ${this.interval}ms`);
-        }, this.interval);
-    }
-    async init() {
-        try {
-            const { uris, options } = this.config;
-            const connection = await mongoose_1.connect(uris, options);
-            return Boolean(connection);
+    async connect(config) {
+        if (!config) {
+            return;
         }
-        catch (err) {
-            console.error(err);
-            return false;
-        }
+        const connection = await mongoose_1.createConnection(config.uri, config.options);
+        connection.on('open', () => {
+            console.info('Open connection to mongo server.');
+        });
+        connection.on('connected', () => {
+            console.info('Connected to mongo server.');
+        });
+        connection.on('reconnect', () => {
+            console.log('Reconnect to mongo server.');
+        });
+        connection.on('error', (err) => {
+            console.error('Error connection to mongo server!', err);
+        });
     }
 }
 exports.MongodbResource = MongodbResource;

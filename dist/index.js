@@ -14,7 +14,7 @@ class App {
             App.moleculerTransport = new moleculer_1.MoleculerTransport(transporter, serviceName, options.actionsDir);
         }
         if (App.config.mongodb) {
-            App.mongoResource = new mongodb_1.MongodbResource(App.config.mongodb);
+            App.mongoResource = new mongodb_1.MongodbResource();
         }
         if (App.config.rabbit) {
             App.amqpTransport = new rabbitmq_1.RabbitMqTransport();
@@ -32,12 +32,18 @@ class App {
         }
         return this.moleculerTransport.act(service, action, params, options);
     }
+    static createQueue(queueName) {
+        return App.amqpTransport.createQueue(queueName);
+    }
+    static async publish(queueName, payload) {
+        return App.amqpTransport.publish(queueName, payload);
+    }
     async run() {
-        var _a, _b, _c, _d, _e;
+        var _a, _b;
         const promises = [
-            (_a = App.mongoResource) === null || _a === void 0 ? void 0 : _a.connect(),
-            (_b = App.moleculerTransport) === null || _b === void 0 ? void 0 : _b.listen((_c = this.options.api) === null || _c === void 0 ? void 0 : _c.express, (_d = this.options.api) === null || _d === void 0 ? void 0 : _d.settings),
-            (_e = App.amqpTransport) === null || _e === void 0 ? void 0 : _e.listen()
+            App.mongoResource.connect(App.config.mongodb),
+            App.moleculerTransport.listen((_a = this.options.api) === null || _a === void 0 ? void 0 : _a.express, (_b = this.options.api) === null || _b === void 0 ? void 0 : _b.settings),
+            App.amqpTransport.listen(App.config.rabbit)
         ];
         Promise.all(promises);
     }
