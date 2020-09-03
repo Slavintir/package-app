@@ -25,7 +25,7 @@ export class App {
         }
 
         if (App.config.mongodb) {
-            App.mongoResource = new MongodbResource(App.config.mongodb);
+            App.mongoResource = new MongodbResource();
         }
 
         if (App.config.rabbit) {
@@ -51,7 +51,7 @@ export class App {
 
     async run(): Promise<void> {
         const promises = [
-            App.mongoResource?.connect(),
+            App.mongoResource?.connect(App.config.mongodb),
             App.moleculerTransport?.listen(this.options.api?.express, this.options.api?.settings),
             App.amqpTransport?.listen(App.config.rabbit)
         ];
