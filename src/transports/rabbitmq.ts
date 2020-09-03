@@ -50,7 +50,10 @@ export class RabbitMqTransport {
         const handler = this.listeners.get(this.createKey(event.eventName));
 
         if (typeof handler === 'function') {
-            return handler(event.payload, event.meta);
+            await handler(event.payload, event.meta);
+            this.channel.ack(message);
+
+            return;
         }
 
         console.log('No processed event', { event });
