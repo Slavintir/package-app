@@ -1,6 +1,6 @@
 import { CallingOptions } from 'moleculer';
 
-import { EventPayload, EventListenerHandler } from './src/interfaces/app/amqp';
+import { EventListenerHandler, Event } from './src/interfaces/app/amqp';
 import { AppOptions, ServiceName, ActionName, AppConfig } from './src/interfaces/app';
 
 export * from './src/errors'
@@ -24,6 +24,6 @@ declare module 'package-app' {
         // Rabbit MQ
         static createQueue(queueName: string): Promise<void>;
         static subscribe(queueName: string, eventName: string, handler: EventListenerHandler): Promise<void>;
-        static publish(queueName: string, payload: EventPayload): Promise<boolean>;
+        static publish(queueName: string, event: Event): boolean;
     }
 }
