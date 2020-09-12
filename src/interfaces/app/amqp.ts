@@ -13,7 +13,7 @@ export interface Event {
     meta: EventMeta;
 }
 
-export type EventListenerHandler = (payload: EventPayload, meta: EventMeta) => Promise<void>;
+export type EventListenerHandler = (payload: any, meta: EventMeta) => Promise<void>;
 
 export interface EventListener {
     readonly eventName: string;
