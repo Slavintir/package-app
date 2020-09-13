@@ -40,7 +40,10 @@ class MoleculerTransport {
         for (const actionDir of await directory_1.DirectoryHelper.recursiveReadDir(actionsDir, expansions)) {
             if (expansions.includes(path_1.extname(actionDir))) {
                 const { actionName, handler } = require(actionDir).default;
-                actions[actionName] = async (ctx) => handler(ctx);
+                actions[actionName] = async (ctx) => handler(ctx).catch((err) => {
+                    console.error('Fail handel action', ctx, err);
+                    throw err;
+                });
             }
         }
         return actions;

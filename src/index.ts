@@ -43,23 +43,35 @@ export class App {
     }
 
     static async act<T, P>(service: ServiceName, action: ActionName, params: P, options?: CallingOptions): Promise<T> {
-        if (!this.moleculerTransport) {
-            throw new UnexpectedError('Moleculer transport did not initialized', { service, action, params });
+        if (this.moleculerTransport) {
+            return this.moleculerTransport.act(service, action, params, options);
         }
-
-        return this.moleculerTransport.act(service, action, params, options);
+        
+        throw new UnexpectedError('Amqp transport setting not pointed. Update config along config.transporter');
     }
 
     static createQueue(queueName: string): Promise<void> {
-        return App.amqpTransport.createQueue(queueName);
+        if (App.amqpTransport) {
+            return App.amqpTransport.createQueue(queueName);
+        }
+
+        throw new UnexpectedError('Amqp transport setting not pointed. Update config along config.rabbit');
     }
 
     static publish(queueName: string, event: Event): boolean {
-        return App.amqpTransport.publish(queueName, event);
+        if (App.amqpTransport) {
+            return App.amqpTransport.publish(queueName, event);
+        }
+
+        throw new UnexpectedError('Amqp transport setting not pointed. Update config along config.rabbit');
     }
 
     static async subscribe(queueName: string, eventName: string, handler: EventListenerHandler): Promise<void> {
-        return App.amqpTransport.subscribe(queueName, eventName, handler);
+        if (App.amqpTransport) {
+            return App.amqpTransport.subscribe(queueName, eventName, handler);
+        }
+
+        throw new UnexpectedError('Amqp transport setting not pointed. Update config along config.rabbit');
     }
 
     async run(): Promise<void> {

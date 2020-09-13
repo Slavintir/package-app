@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.RabbitMqTransport = void 0;
 const amqplib_1 = __importDefault(require("amqplib"));
+const src_1 = require("src");
 class RabbitMqTransport {
     constructor() {
         this.listeners = new Map();
@@ -42,9 +43,12 @@ class RabbitMqTransport {
         const event = JSON.parse(message.content.toString());
         const handler = this.listeners.get(this.createKey(event.eventName));
         if (typeof handler === 'function') {
-            await handler(event.payload, event.meta);
+            console.debug('Received event', Object.assign({}, event));
             this.channel.ack(message);
-            return;
+            await handler(event.payload, { initiator: src_1.App.getConfig().serviceName, date: new Date() }).catch((err) => {
+                console.error('Fail handel event', Object.assign({}, event), err);
+                throw err;
+            });
         }
         console.log('No processed event', { event });
     }

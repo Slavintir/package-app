@@ -1,4 +1,4 @@
-import { ServiceBroker, Context, CallingOptions, ServiceSettingSchema, Service, ServiceSchema } from 'moleculer';
+import { ServiceBroker, Context, CallingOptions, ServiceSettingSchema, Service, ServiceSchema, ActionHandler } from 'moleculer';
 import { promises as fs, Stats } from 'fs';
 import { resolve, extname } from 'path';
 import { Express } from 'express';
@@ -51,7 +51,10 @@ export class MoleculerTransport {
         for (const actionDir of await DirectoryHelper.recursiveReadDir(actionsDir, expansions)) {
             if (expansions.includes(extname(actionDir))) {
                 const { actionName, handler }: Action = require(actionDir).default;
-                actions[actionName] = async (ctx: Context<any, any>) => handler(ctx);
+                actions[actionName] = async (ctx: Context<any, any>) => handler(ctx).catch((err: Error) => {
+                    console.error('Fail handel action', ctx, err);
+                    throw err;
+                });
             }
         }
 

@@ -10,7 +10,6 @@ export interface EventPayload {
 export interface Event {
     eventName: string;
     payload: EventPayload;
-    meta: EventMeta;
 }
 
 export type EventListenerHandler = (payload: any, meta: EventMeta) => Promise<void>;

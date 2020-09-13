@@ -1,7 +1,8 @@
 import amqp, { Channel, ConsumeMessage } from 'amqplib';
 
-import { EventPayload, EventListenerHandler, Event } from '../interfaces/app/amqp';
+import { EventListenerHandler, Event } from '../interfaces/app/amqp';
 import { RabbitConfig } from 'src/interfaces/app';
+import { App } from 'src';
 
 export class RabbitMqTransport {
     private channel!: Channel;
@@ -15,7 +16,7 @@ export class RabbitMqTransport {
 
             return;
         }
-        
+
         this.channel = await connection.createChannel();
         console.log('Success connect to rabbit mq', { address });
     }
@@ -50,10 +51,13 @@ export class RabbitMqTransport {
         const handler = this.listeners.get(this.createKey(event.eventName));
 
         if (typeof handler === 'function') {
-            await handler(event.payload, event.meta);
+            console.debug('Received event', { ...event });
             this.channel.ack(message);
 
-            return;
+            await handler(event.payload, { initiator: App.getConfig().serviceName, date: new Date() }).catch((err: Error) => {
+                console.error('Fail handel event', { ...event }, err);
+                throw err;
+            });
         }
 
         console.log('No processed event', { event });

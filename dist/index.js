@@ -27,19 +27,28 @@ class App {
         return App.instance ? App.instance : new App(options);
     }
     static async act(service, action, params, options) {
-        if (!this.moleculerTransport) {
-            throw new errors_1.UnexpectedError('Moleculer transport did not initialized', { service, action, params });
+        if (this.moleculerTransport) {
+            return this.moleculerTransport.act(service, action, params, options);
         }
-        return this.moleculerTransport.act(service, action, params, options);
+        throw new errors_1.UnexpectedError('Amqp transport setting not pointed. Update config along config.transporter');
     }
     static createQueue(queueName) {
-        return App.amqpTransport.createQueue(queueName);
+        if (App.amqpTransport) {
+            return App.amqpTransport.createQueue(queueName);
+        }
+        throw new errors_1.UnexpectedError('Amqp transport setting not pointed. Update config along config.rabbit');
     }
     static publish(queueName, event) {
-        return App.amqpTransport.publish(queueName, event);
+        if (App.amqpTransport) {
+            return App.amqpTransport.publish(queueName, event);
+        }
+        throw new errors_1.UnexpectedError('Amqp transport setting not pointed. Update config along config.rabbit');
     }
     static async subscribe(queueName, eventName, handler) {
-        return App.amqpTransport.subscribe(queueName, eventName, handler);
+        if (App.amqpTransport) {
+            return App.amqpTransport.subscribe(queueName, eventName, handler);
+        }
+        throw new errors_1.UnexpectedError('Amqp transport setting not pointed. Update config along config.rabbit');
     }
     async run() {
         var _a, _b, _c, _d, _e;
