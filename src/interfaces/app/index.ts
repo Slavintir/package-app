@@ -1,9 +1,11 @@
-import { ConnectionOptions } from 'mongoose';
 import { Express } from 'express';
+import { ConnectionOptions } from 'mongoose';
 import { ServiceSettingSchema } from 'moleculer';
 
+export type Mongoose = typeof import('mongoose');
+
 export interface MongoDbConfig {
-    uris: string;
+    uri: string;
     options: ConnectionOptions;
 }
 
@@ -12,10 +14,17 @@ export enum ServiceName {
     Auth = 'auth'
 }
 
+export interface RabbitConfig {
+    host: string;
+    port: number;
+    reconnectTimeoutMs?: number;
+}
+
 export interface AppConfig {
     serviceName: string;
     transporter?: string;
     mongodb?: MongoDbConfig;
+    rabbit?: RabbitConfig;
 }
 
 export interface AppApiOptions {
